@@ -1,7 +1,7 @@
 <x-app-layout>
-    <div class="font-serif">
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Accusamus eos perspiciatis asperiores illum sunt
-        adipisci quae dicta porro id obcaecati dolore deserunt sapiente optio vero corrupti, rem, consectetur laudantium
-        voluptatibus facilis repellendus.
+    <div class="grid grid-rows-1 grid-flow-col gap-2">
+        <div class="grid grid-cols-3 gap-4">
+            <div>Hello, {{ $user->name }}</div>
+        </div>
     </div>
 </x-app-layout>
