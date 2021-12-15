@@ -15,4 +15,15 @@ class Controller extends BaseController
     {
         return auth()->user();
     }
+
+    public function respondRedirectMessage($route, $type, $content)
+    {
+        return redirect()->route($route)->with($type, $content);
+    }
+
+    public function respondWithErrors($route, $validator, $type)
+    {
+        return redirect()->route($route)->withErrors($validator, $type);
+    }
+
 }
