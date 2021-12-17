@@ -18,7 +18,7 @@ class PlaylistController extends Controller
      */
     public function index()
     {
-        return view('screencast.playlists.create');
+        return view('screencast.playlists.index');
     }
 
     /**

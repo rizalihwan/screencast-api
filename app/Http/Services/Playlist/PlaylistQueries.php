@@ -10,7 +10,7 @@ class PlaylistQueries extends Service
         'thumbnail' => 'nullable|max:2048',
         'name' => 'required|max:50|min:3',
         'description' => 'required|max:200|min:10',
-        'price' => 'required'
+        'price' => 'required|numeric'
     ];
 
     static $mesaages = [
@@ -27,5 +27,4 @@ class PlaylistQueries extends Service
         'price' => 'Harga',
         'user_id' => 'Author'
     ];
-
 }
