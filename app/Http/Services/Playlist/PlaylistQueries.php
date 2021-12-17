@@ -7,7 +7,7 @@ use App\Http\Services\Service;
 class PlaylistQueries extends Service
 {
     static $rules = [
-        // 'thumbnail' => 'nullable|max:2048|mimes:jpg,png,jpeg',
+        'thumbnail' => 'nullable|max:2048',
         'name' => 'required|max:50|min:3',
         'description' => 'required|max:200|min:10',
         'price' => 'required'

@@ -14,6 +14,6 @@ class PlaylistCommands extends Service
 
     public static function thumbnailStore($thumb)
     {
-        return request()->file($thumb)->store("thumbnail");
+        return request()->file($thumb)->store("images/playlist");
     }
 }
