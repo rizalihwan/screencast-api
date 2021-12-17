@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Screencast;
 
 use App\Http\Controllers\Controller;
-use App\Http\Services\Playlist\PlaylistCommands;
-use App\Http\Services\Playlist\PlaylistQueries;
+use App\Http\Services\Playlist\{PlaylistCommands, PlaylistQueries};
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,22 +41,14 @@ class PlaylistController extends Controller
     {
         try {
             $data = $request->except(['_token']);
-            $data['slug'] = \Str::slug($data['name'] . '-' . \Str::random(20));
-            if (isset($data['thumbnail'])) {
-                $thumbnail = PlaylistCommands::thumbnailStore('thumbnail');
-                $data['thumbnail'] = $thumbnail;
-            } else {
-                $data['thumbnail'] = null;
-            }
+            $data['slug'] = \Str::slug($data['name'] . '-' . strtolower(\Str::random(20)));
+            $data['thumbnail'] = isset($data['thumbnail']) ? PlaylistCommands::thumbnailStore('thumbnail') : null;
 
             if (Auth::check()) {
                 $data['user_id'] = Auth::id();
             } else {
-                if (!method_exists($this, respondRedirectMessage())) {
-                    throw new Exception("System Error", 500);
-                }
-
-                return $this->respondRedirectMessage('screencast.playlists.index', 'error', 'User ID Tidak Valid.');
+                if (!method_exists($this, respondRedirectMessage())) throw new Exception("System Error", 500);
+                else return $this->respondRedirectMessage('screencast.playlists.index', 'error', 'User ID Tidak Valid.');
             }
 
             $validator = Validator::make(

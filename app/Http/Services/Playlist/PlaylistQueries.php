@@ -17,7 +17,7 @@ class PlaylistQueries extends Service
         'required' => ':attribute tidak boleh kosong',
         'min' => ':attribute minimal :min karakter',
         'unique' => ':attribute yang dimasukan sudah ada!',
-        'max' => ':attribute maximan :max karakter'
+        'max' => ':attribute maximal :max karakter'
     ];
 
     static $attributes = [
