@@ -18,7 +18,9 @@ class PlaylistController extends Controller
      */
     public function index()
     {
-        return view('screencast.playlists.index');
+        return view('screencast.playlists.index', [
+            'playlists' => PlaylistQueries::getDataWithPaginated(['id', 'DESC'], 10)
+        ]);
     }
 
     /**
@@ -65,7 +67,7 @@ class PlaylistController extends Controller
                 return $this->respondWithErrors('screencast.playlists.index', $validator, 'playlist_store');
             }
 
-            PlaylistCommands::store($data);
+            PlaylistCommands::create($data);
             return $this->respondRedirectMessage('screencast.playlists.index', 'success', 'Data berhasil disimpan');
         } catch (\Exception $e) {
             return $this->respondRedirectMessage('screencast.playlists.index', 'error', "{$e->getMessage()}, {$e->getCode()}");
@@ -91,7 +93,9 @@ class PlaylistController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('screencast.playlists.edit', [
+            'playlist' => PlaylistQueries::getOnePlaylist($id)
+        ]);
     }
 
     /**
@@ -103,7 +107,26 @@ class PlaylistController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+
+        try {
+            $data = $request->except(['_token']);
+
+            $validator = Validator::make(
+                $data,
+                PlaylistQueries::$rules,
+                PlaylistQueries::$mesaages,
+                PlaylistQueries::$attributes
+            );
+
+            if ($validator->fails()) {
+                return redirect()->route('screencast.playlists.edit', $id)->withErrors($validator, 'playlist_update');
+            }
+
+            PlaylistCommands::update($id, $data);
+            return redirect()->route('screencast.playlists.edit', $id)->with('success', 'Data berhasil diubah');
+        } catch (\Exception $e) {
+            return redirect()->route('screencast.playlists.edit', $id)->with('error', "{$e->getMessage()}, {$e->getCode()}");
+        }
     }
 
     /**
@@ -114,6 +137,11 @@ class PlaylistController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            PlaylistCommands::delete($id);
+            return $this->respondRedirectMessage('screencast.playlists.index', 'success', 'Data berhasil dihapus');
+        } catch (\Exception $e) {
+            return $this->respondRedirectMessage('screencast.playlists.index', 'error', "{$e->getMessage()}");
+        }
     }
 }

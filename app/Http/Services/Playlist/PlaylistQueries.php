@@ -3,6 +3,7 @@
 namespace App\Http\Services\Playlist;
 
 use App\Http\Services\Service;
+use App\Models\Screencast\Playlist;
 
 class PlaylistQueries extends Service
 {
@@ -27,4 +28,16 @@ class PlaylistQueries extends Service
         'price' => 'Harga',
         'user_id' => 'Author'
     ];
+
+    public static function getDataWithPaginated($orderBy = ['id', 'ASC'], int $paginated = 5)
+    {
+        return Playlist::orderBy($orderBy[0], $orderBy[1])->paginate($paginated);
+    }
+
+    public static function getOnePlaylist(int $key)
+    {
+        $playlist = Playlist::findOrFail($key);
+
+        return $playlist;
+    }
 }
