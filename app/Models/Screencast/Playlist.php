@@ -14,6 +14,13 @@ class Playlist extends Model
 
     public function user()
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
+    }
+
+    public function scopeShowThumbnail()
+    {
+        $thumb = $this->thumbnail;
+        if(!is_null($thumb)) $result = "/storage/" . $thumb;
+        return $result;
     }
 }
