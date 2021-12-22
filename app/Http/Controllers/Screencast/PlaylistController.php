@@ -107,7 +107,6 @@ class PlaylistController extends Controller
      */
     public function update(Request $request, $id)
     {
-
         try {
             $data = $request->except(['_token']);
 
