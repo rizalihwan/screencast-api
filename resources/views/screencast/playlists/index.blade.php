@@ -4,7 +4,7 @@
         <div class="grid grid-cols-3 gap-4">
             <div>
                 <span class="font-bold">
-                    Playlist Management
+                    {{ $playlistPage }}
                 </span>
             </div>
         </div>
