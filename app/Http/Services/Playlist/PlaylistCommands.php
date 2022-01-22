@@ -27,7 +27,7 @@ class PlaylistCommands extends Service
             $field['thumbnail'] = $playlist->thumbnail;
         }
 
-        return !$playlist ? abort(404, "Not Found") : $playlist->update($field);
+        return $playlist->isEmpty() ? abort(404, "Not Found") : $playlist->update($field);
     }
 
     public static function delete(int $key)
