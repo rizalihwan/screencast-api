@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Screencast;
 
 use App\Http\Controllers\Controller;
 use App\Http\Services\Playlist\{PlaylistCommands, PlaylistQueries};
+use App\Models\Screencast\Playlist;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,11 @@ use Illuminate\Support\Facades\Validator;
 
 class PlaylistController extends Controller
 {
+    public function __construct()
+    {
+        $this->price = request('price');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -67,6 +73,7 @@ class PlaylistController extends Controller
                 return $this->respondWithErrors('screencast.playlists.index', $validator, 'playlist_store');
             }
 
+            $data['price'] = $this->overwritePriceFormat($this->price);
             PlaylistCommands::create($data);
             return $this->respondRedirectMessage('screencast.playlists.index', 'success', 'Data berhasil disimpan');
         } catch (\Exception $e) {
@@ -91,10 +98,10 @@ class PlaylistController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Playlist $playlist)
     {
         return view('screencast.playlists.edit', [
-            'playlist' => PlaylistQueries::getOnePlaylist($id)
+            'playlist' => PlaylistQueries::getOnePlaylist($playlist)
         ]);
     }
 
@@ -105,7 +112,7 @@ class PlaylistController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Playlist $playlist)
     {
         try {
             $data = $request->except(['_token']);
@@ -118,13 +125,14 @@ class PlaylistController extends Controller
             );
 
             if ($validator->fails()) {
-                return redirect()->route('screencast.playlists.edit', $id)->withErrors($validator, 'playlist_update');
+                return redirect()->route('screencast.playlists.edit', $playlist)->withErrors($validator, 'playlist_update');
             }
 
-            PlaylistCommands::update($id, $data);
-            return redirect()->route('screencast.playlists.edit', $id)->with('success', 'Data berhasil diubah');
+            $data['price'] = $this->overwritePriceFormat($this->price);
+            PlaylistCommands::update($playlist, $data);
+            return redirect()->route('screencast.playlists.edit', $playlist)->with('success', 'Data berhasil diubah');
         } catch (\Exception $e) {
-            return redirect()->route('screencast.playlists.edit', $id)->with('error', "{$e->getMessage()}, {$e->getCode()}");
+            return redirect()->route('screencast.playlists.edit', $playlist)->with('error', "{$e->getMessage()}, {$e->getCode()}");
         }
     }
 
@@ -134,10 +142,10 @@ class PlaylistController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Playlist $playlist)
     {
         try {
-            PlaylistCommands::delete($id);
+            PlaylistCommands::delete($playlist);
             return $this->respondRedirectMessage('screencast.playlists.index', 'success', 'Data berhasil dihapus');
         } catch (\Exception $e) {
             return $this->respondRedirectMessage('screencast.playlists.index', 'error', "{$e->getMessage()}");

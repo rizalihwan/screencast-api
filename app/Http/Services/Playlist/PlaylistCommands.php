@@ -17,9 +17,8 @@ class PlaylistCommands extends Service
         return request()->file($thumb)->store("images/playlist");
     }
 
-    public static function update(int $key, array $field)
+    public static function update($playlist, array $field)
     {
-        $playlist = Playlist::find($key);
         if (isset($field['thumbnail'])) {
             \Storage::delete($playlist->thumbnail);
             $field['thumbnail'] = self::thumbnailStore('thumbnail');
@@ -27,14 +26,12 @@ class PlaylistCommands extends Service
             $field['thumbnail'] = $playlist->thumbnail;
         }
 
-        return $playlist->isEmpty() ? abort(404, "Not Found") : $playlist->update($field);
+        return !$playlist ? abort(404, "Not Found") : $playlist->update($field);
     }
 
-    public static function delete(int $key)
+    public static function delete($playlist)
     {
-        $playlist = Playlist::findOrFail($key);
         if ($playlist->thumbnail) \Storage::delete($playlist->thumbnail);
-
-        return $playlist->delete();
+        return !$playlist ? abort(404, "Not Found") : $playlist->delete();
     }
 }

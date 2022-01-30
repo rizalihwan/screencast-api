@@ -11,7 +11,7 @@ class PlaylistQueries extends Service
         'thumbnail' => 'nullable|max:2048',
         'name' => 'required|max:50|min:3',
         'description' => 'required|max:200|min:10',
-        'price' => 'required|numeric'
+        'price' => 'required'
     ];
 
     static $mesaages = [
@@ -34,10 +34,8 @@ class PlaylistQueries extends Service
         return Playlist::orderBy($orderBy[0], $orderBy[1])->paginate($paginated);
     }
 
-    public static function getOnePlaylist(int $key)
+    public static function getOnePlaylist($playlist)
     {
-        $playlist = Playlist::findOrFail($key);
-
         return $playlist;
     }
 }

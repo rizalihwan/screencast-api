@@ -58,7 +58,7 @@
                         </label>
                         <input
                             class="shadow appearance-none border @if ($errors->playlist_store->has('name')) border-red-500 @endif rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                            id="name" name="name" type="text">
+                            id="name" name="name" value="{{ old('name') }}" type="text">
                         @if ($errors->playlist_store->has('name'))
                             <p class="text-red-500 text-xs italic">{{ $errors->playlist_store->first('name') }}
                             </p>
@@ -70,19 +70,19 @@
                         </label>
                         <input
                             class="shadow appearance-none border @if ($errors->playlist_store->has('description')) border-red-500 @endif rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                            id="description" name="description" type="text">
+                            id="description" name="description" value="{{ old('description') }}" type="text">
                         @if ($errors->playlist_store->has('description'))
                             <p class="text-red-500 text-xs italic">{{ $errors->playlist_store->first('description') }}
                             </p>
                         @endif
                     </div>
                     <div class="mb-6">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="Price">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="price">
                             Price
                         </label>
                         <input
                             class="shadow appearance-none border @if ($errors->playlist_store->has('price')) border-red-500 @endif rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                            id="Price" name="price" type="text">
+                            id="price" name="price" value="{{ old('price') }}" type="text">
                         @if ($errors->playlist_store->has('price'))
                             <p class="text-red-500 text-xs italic">{{ $errors->playlist_store->first('price') }}
                             </p>
@@ -143,10 +143,10 @@
                                         <td class="px-4 py-3 text-sm border">{{ $key->created_at->diffForHumans() }}
                                         </td>
                                         <td class="px-4 py-5 text-ms font-semibold border">
-                                            <a href="{{ route('screencast.playlists.edit', $key->id) }}"
+                                            <a href="{{ route('screencast.playlists.edit', $key->slug) }}"
                                                 class="p-3 bg-transparent border-2 border-green-500 text-green-500 text-lg rounded-lg hover:bg-green-500 hover:text-gray-100 focus:border-4 focus:border-green-300"><i
                                                     class="fa fa-pencil"></i></a>
-                                            <form action="{{ route('screencast.playlists.destroy', $key->id) }}"
+                                            <form action="{{ route('screencast.playlists.destroy', $key->slug) }}"
                                                 method="post" class="mt-5">
                                                 @csrf
                                                 @method('delete')
@@ -173,4 +173,29 @@
             </section>
         </div>
     </div>
+    @push('script')
+        <script>
+            let rupiah = document.getElementById('price');
+            rupiah.addEventListener('keyup', function(e) {
+                rupiah.value = formatRupiah(this.value, 'Rp. ');
+            });
+
+            function formatRupiah(angka, prefix) {
+                let number_string = angka.replace(/[^,\d]/g, '').toString(),
+                    split = number_string.split(','),
+                    sisa = split[0].length % 3,
+                    rupiah = split[0].substr(0, sisa),
+                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+                if (ribuan) {
+                    separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+
+                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+                return prefix == undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
+            }
+        </script>
+
+    @endpush
 </x-app-layout>

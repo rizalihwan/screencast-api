@@ -37,7 +37,7 @@
                 </div>
             @endif
             <div class="w-full max-w-xs">
-                <form method="POST" action="{{ route('screencast.playlists.update', $playlist->id) }}"
+                <form method="POST" action="{{ route('screencast.playlists.update', $playlist) }}"
                     class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" enctype="multipart/form-data">
                     @csrf
                     @method('patch')
@@ -82,12 +82,12 @@
                         @endif
                     </div>
                     <div class="mb-6">
-                        <label class="block text-gray-700 text-sm font-bold mb-2" for="Price">
+                        <label class="block text-gray-700 text-sm font-bold mb-2" for="price">
                             Price
                         </label>
                         <input
                             class="shadow appearance-none border @if ($errors->playlist_update->has('price')) border-red-500 @endif rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
-                            id="Price" name="price" value="{{ $playlist->price ?? old('price') }}" type="text">
+                            id="price" name="price" value="{{ 'Rp. ' . number_format($playlist->price, 0, ',', '.') ?? old('price') }}" type="text">
                         @if ($errors->playlist_update->has('price'))
                             <p class="text-red-500 text-xs italic">{{ $errors->playlist_update->first('price') }}
                             </p>
@@ -102,4 +102,29 @@
             </div>
         </div>
     </div>
+    @push('script')
+        <script>
+            let rupiah = document.getElementById('price');
+            rupiah.addEventListener('keyup', function(e) {
+                rupiah.value = formatRupiah(this.value, 'Rp. ');
+            });
+
+            function formatRupiah(angka, prefix) {
+                let number_string = angka.replace(/[^,\d]/g, '').toString(),
+                    split = number_string.split(','),
+                    sisa = split[0].length % 3,
+                    rupiah = split[0].substr(0, sisa),
+                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+                if (ribuan) {
+                    separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+
+                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+                return prefix == undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
+            }
+        </script>
+
+    @endpush
 </x-app-layout>
