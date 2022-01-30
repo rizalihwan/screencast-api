@@ -23,7 +23,16 @@ class Controller extends BaseController
 
     public function respondWithErrors($route, $validator, $type)
     {
-        return redirect()->route($route)->withErrors($validator, $type);
+        return redirect()->route($route)->withErrors($validator, $type)->withInput();
     }
 
+    public function overwritePriceFormat($request)
+    {
+        $price = preg_replace('/[Rp. ]/', '', $request);
+
+        if (!is_numeric($price))
+            throw new \Exception("The input price format entered must be numeric!", 400);
+        else
+            return $price;
+    }
 }
