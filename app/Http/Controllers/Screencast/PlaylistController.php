@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Screencast;
 
 use App\Http\Controllers\Controller;
 use App\Http\Services\Playlist\{PlaylistCommands, PlaylistQueries};
-use App\Models\Screencast\Playlist;
+use App\Models\Screencast\{Playlist, Tag};
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +14,13 @@ class PlaylistController extends Controller
 {
     public function __construct()
     {
-        $this->price = request('price');
+        $this->data = [
+            'price' => request('price'),
+            'name' => request('name'),
+            'thumbnail' => request('thumbnail'),
+            'description' => request('description'),
+            'tags' => request('tags')
+        ];
     }
 
     /**
@@ -25,7 +31,8 @@ class PlaylistController extends Controller
     public function index()
     {
         return view('screencast.playlists.index', [
-            'playlists' => PlaylistQueries::getDataWithPaginated(['id', 'DESC'], 10)
+            'playlists' => PlaylistQueries::getDataWithPaginated(['id', 'DESC'], 10),
+            'tags' => Tag::oldest()->get()
         ]);
     }
 
@@ -45,25 +52,15 @@ class PlaylistController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
         try {
-            $data = $request->except(['_token']);
-            $data['slug'] = \Str::slug($data['name'] . '-' . strtolower(\Str::random(20)));
-            $data['thumbnail'] = isset($data['thumbnail']) ? PlaylistCommands::thumbnailStore('thumbnail') : null;
-
-            if (Auth::check()) {
-                $data['user_id'] = Auth::id();
-            } else {
-                if (!method_exists($this, respondRedirectMessage())) throw new Exception("System Error", 500);
-                else return $this->respondRedirectMessage('screencast.playlists.index', 'error', 'User ID Tidak Valid.');
-            }
-
             $validator = Validator::make(
-                $data,
+                request()->except(['_token']),
                 array_merge(PlaylistQueries::$rules, [
-                    'slug' => 'required|unique:playlists,slug',
-                    'user_id' => 'required|exists:users,id',
+                    'slug' => 'unique:playlists,slug',
+                    'user_id' => 'exists:users,id',
+                    'tags' => 'exists:tags,id'
                 ]),
                 PlaylistQueries::$mesaages,
                 PlaylistQueries::$attributes
@@ -73,8 +70,23 @@ class PlaylistController extends Controller
                 return $this->respondWithErrors('screencast.playlists.index', $validator, 'playlist_store');
             }
 
-            $data['price'] = $this->overwritePriceFormat($this->price);
-            PlaylistCommands::create($data);
+            if (Auth::check()) {
+                $userID = $this->getUser()->id;
+            } else {
+                if (!method_exists($this, respondRedirectMessage())) throw new Exception("System Error", 500);
+                else return $this->respondRedirectMessage('screencast.playlists.index', 'error', 'User ID Tidak Valid.');
+            }
+
+            $playlist = PlaylistCommands::create([
+                'user_id' => $userID,
+                'name' => $this->data['name'],
+                'thumbnail' => $this->data['thumbnail'] ? PlaylistCommands::thumbnailStore('thumbnail') : null,
+                'slug' => \Str::slug(request('name') . '-' . strtolower(\Str::random(20))),
+                'description' =>  $this->data['description'],
+                'price' =>  $this->overwritePriceFormat($this->data['price'])
+            ]);
+            $playlist->tags()->attach($this->data['tags']);
+
             return $this->respondRedirectMessage('screencast.playlists.index', 'success', 'Data berhasil disimpan');
         } catch (\Exception $e) {
             return $this->respondRedirectMessage('screencast.playlists.index', 'error', "{$e->getMessage()}, {$e->getCode()}");
@@ -87,9 +99,13 @@ class PlaylistController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Playlist $playlist)
     {
-        //
+        if (empty($playlist)) {
+            abort(404, "NOT FOUND");
+        }
+
+        dd($playlist);
     }
 
     /**
@@ -100,8 +116,13 @@ class PlaylistController extends Controller
      */
     public function edit(Playlist $playlist)
     {
+        if (empty($playlist)) {
+            abort(404, "NOT FOUND");
+        }
+
         return view('screencast.playlists.edit', [
-            'playlist' => PlaylistQueries::getOnePlaylist($playlist)
+            'playlist' => PlaylistQueries::getOnePlaylist($playlist),
+            'tags' => Tag::oldest()->get()
         ]);
     }
 
@@ -145,6 +166,11 @@ class PlaylistController extends Controller
     public function destroy(Playlist $playlist)
     {
         try {
+            if (empty($playlist)) {
+                abort(404, "NOT FOUND");
+            }
+
+            $playlist->tags()->detach();
             PlaylistCommands::delete($playlist);
             return $this->respondRedirectMessage('screencast.playlists.index', 'success', 'Data berhasil dihapus');
         } catch (\Exception $e) {

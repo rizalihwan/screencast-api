@@ -18,7 +18,8 @@ class PlaylistQueries extends Service
         'required' => ':attribute tidak boleh kosong',
         'min' => ':attribute minimal :min karakter',
         'unique' => ':attribute yang dimasukan sudah ada!',
-        'max' => ':attribute maximal :max karakter'
+        'max' => ':attribute maximal :max karakter',
+        'exists' => ':attribute tidak ditemukan.'
     ];
 
     static $attributes = [
@@ -26,7 +27,8 @@ class PlaylistQueries extends Service
         'name' => 'Nama',
         'description' => 'Deskripsi',
         'price' => 'Harga',
-        'user_id' => 'Author'
+        'user_id' => 'Author',
+        'tags' => 'Tag'
     ];
 
     public static function getDataWithPaginated($orderBy = ['id', 'ASC'], int $paginated = 5)
