@@ -33,7 +33,9 @@ class PlaylistQueries extends Service
 
     public static function getDataWithPaginated($orderBy = ['id', 'ASC'], int $paginated = 5)
     {
-        return Playlist::orderBy($orderBy[0], $orderBy[1])->paginate($paginated);
+        return Playlist::with(['tags'])
+            ->orderBy($orderBy[0], $orderBy[1])
+            ->paginate($paginated);
     }
 
     public static function getOnePlaylist($playlist)

@@ -142,7 +142,16 @@
                                                         aria-hidden="true"></div>
                                                 </div>
                                                 <div>
-                                                    <p class="font-semibold text-black">{{ $key->name }}</p>
+                                                    <p class="font-semibold text-black">
+                                                    <div>
+                                                        {{ $key->name }}
+                                                    </div>
+                                                    @foreach ($key->tags as $item)
+                                                        <span class="text-gray-600 mr-1">
+                                                            {{ $item->name }}
+                                                        </span>
+                                                    @endforeach
+                                                    </p>
                                                     <p class="text-xs text-gray-600">
                                                         {{ 'Author : ' . $key->user->name }}
                                                     </p>

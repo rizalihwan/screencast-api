@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Screencast;
 
 use App\Http\Controllers\Controller;
 use App\Http\Services\Playlist\{PlaylistCommands, PlaylistQueries};
-use App\Models\Screencast\{Playlist, Tag};
+use App\Http\Services\Tag\TagQueries;
+use App\Models\Screencast\Playlist;
 use Exception;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -32,7 +32,7 @@ class PlaylistController extends Controller
     {
         return view('screencast.playlists.index', [
             'playlists' => PlaylistQueries::getDataWithPaginated(['id', 'DESC'], 10),
-            'tags' => Tag::oldest()->get()
+            'tags' => TagQueries::getAllTag()
         ]);
     }
 
@@ -81,7 +81,7 @@ class PlaylistController extends Controller
                 'user_id' => $userID,
                 'name' => $this->data['name'],
                 'thumbnail' => $this->data['thumbnail'] ? PlaylistCommands::thumbnailStore('thumbnail') : null,
-                'slug' => \Str::slug(request('name') . '-' . strtolower(\Str::random(20))),
+                'slug' => \Str::slug($this->data['name'] . '-' . strtolower(\Str::random(20))),
                 'description' =>  $this->data['description'],
                 'price' =>  $this->overwritePriceFormat($this->data['price'])
             ]);
@@ -122,7 +122,7 @@ class PlaylistController extends Controller
 
         return view('screencast.playlists.edit', [
             'playlist' => PlaylistQueries::getOnePlaylist($playlist),
-            'tags' => Tag::oldest()->get()
+            'tags' => TagQueries::getAllTag()
         ]);
     }
 
@@ -133,10 +133,10 @@ class PlaylistController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Playlist $playlist)
+    public function update(Playlist $playlist)
     {
         try {
-            $data = $request->except(['_token']);
+            $data = request()->except(['_token', 'tags']);
 
             $validator = Validator::make(
                 $data,
@@ -149,8 +149,12 @@ class PlaylistController extends Controller
                 return redirect()->route('screencast.playlists.edit', $playlist)->withErrors($validator, 'playlist_update');
             }
 
-            $data['price'] = $this->overwritePriceFormat($this->price);
+            $data['price'] = $this->overwritePriceFormat($this->data['price']);
             PlaylistCommands::update($playlist, $data);
+            if ($this->data['tags']) {
+                $playlist->tags()->sync($this->data['tags']);
+            }
+
             return redirect()->route('screencast.playlists.edit', $playlist)->with('success', 'Data berhasil diubah');
         } catch (\Exception $e) {
             return redirect()->route('screencast.playlists.edit', $playlist)->with('error', "{$e->getMessage()}, {$e->getCode()}");
@@ -172,6 +176,7 @@ class PlaylistController extends Controller
 
             $playlist->tags()->detach();
             PlaylistCommands::delete($playlist);
+
             return $this->respondRedirectMessage('screencast.playlists.index', 'success', 'Data berhasil dihapus');
         } catch (\Exception $e) {
             return $this->respondRedirectMessage('screencast.playlists.index', 'error', "{$e->getMessage()}");
