@@ -4,6 +4,7 @@ namespace App\Http\Services\Playlist;
 
 use App\Http\Services\Service;
 use App\Models\Screencast\Playlist;
+use Exception;
 
 class PlaylistQueries extends Service
 {
@@ -33,13 +34,27 @@ class PlaylistQueries extends Service
 
     public static function getDataWithPaginated($orderBy = ['id', 'ASC'], int $paginated = 5)
     {
-        return Playlist::with(['tags'])
-            ->orderBy($orderBy[0], $orderBy[1])
-            ->paginate($paginated);
+        try {
+            return Playlist::with(['tags'])
+                ->orderBy($orderBy[0], $orderBy[1])
+                ->paginate($paginated);
+        } catch (Exception $th) {
+            if (in_array($th->getCode(), self::$error_codes)) {
+                throw new Exception($th->getMessage(), $th->getCode());
+            }
+            throw new Exception($th->getMessage(), 500);
+        }
     }
 
     public static function getOnePlaylist($playlist)
     {
-        return $playlist;
+        try {
+            return $playlist;
+        } catch (Exception $th) {
+            if (in_array($th->getCode(), self::$error_codes)) {
+                throw new Exception($th->getMessage(), $th->getCode());
+            }
+            throw new Exception($th->getMessage(), 500);
+        }
     }
 }
