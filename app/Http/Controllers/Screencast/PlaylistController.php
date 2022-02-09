@@ -116,6 +116,8 @@ class PlaylistController extends Controller
      */
     public function edit(Playlist $playlist)
     {
+        $this->authorize('optionAccessRights', $playlist);
+
         if (empty($playlist)) {
             abort(404, "NOT FOUND");
         }
@@ -135,6 +137,8 @@ class PlaylistController extends Controller
      */
     public function update(Playlist $playlist)
     {
+        $this->authorize('optionAccessRights', $playlist);
+
         try {
             $data = request()->except(['_token', 'tags']);
 
@@ -169,6 +173,8 @@ class PlaylistController extends Controller
      */
     public function destroy(Playlist $playlist)
     {
+        $this->authorize('optionAccessRights', $playlist);
+
         try {
             if (empty($playlist)) {
                 abort(404, "NOT FOUND");
