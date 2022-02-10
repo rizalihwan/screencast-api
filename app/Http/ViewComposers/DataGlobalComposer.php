@@ -16,5 +16,6 @@ class DataGlobalComposer
     {
         $view->with('user', $this->user->getUser());
         $view->with('playlistPage', 'Playlist Management');
+        $view->with('tagPage', 'Tag Management');
     }
 }

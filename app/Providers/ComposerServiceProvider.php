@@ -15,7 +15,12 @@ class ComposerServiceProvider extends ServiceProvider
     public function register()
     {
         View::composer(
-            ['dashboard', 'screencast.playlists.index'], 'App\Http\ViewComposers\DataGlobalComposer'
+            [
+                'dashboard',
+                'screencast.playlists.index',
+                'screencast.tags.index'
+            ],
+            'App\Http\ViewComposers\DataGlobalComposer'
         );
     }
 

@@ -55,7 +55,7 @@ class PlaylistCommands extends Service
     {
         try {
             if ($playlist->thumbnail) \Storage::delete($playlist->thumbnail);
-            return !$playlist ? abort(404, "Not Found") : $playlist->delete();
+            $playlist->delete();
         } catch (Exception $th) {
             if (in_array($th->getCode(), self::$error_codes)) {
                 throw new Exception($th->getMessage(), $th->getCode());
