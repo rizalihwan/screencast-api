@@ -32,7 +32,7 @@ class PlaylistQueries extends Service
         'tags' => 'Tag'
     ];
 
-    public static function getDataWithPaginated($orderBy = ['id', 'ASC'], int $paginated = 5)
+    public static function getDataWithPaginated(array $orderBy = ['id', 'ASC'], int $paginated = 5)
     {
         try {
             return Playlist::with(['tags'])

@@ -8,6 +8,7 @@ use App\Http\Services\Tag\TagQueries;
 use App\Models\Screencast\Playlist;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class PlaylistController extends Controller
@@ -77,15 +78,17 @@ class PlaylistController extends Controller
                 else return $this->respondRedirectMessage('screencast.playlists.index', 'error', 'User ID Tidak Valid.');
             }
 
-            $playlist = PlaylistCommands::create([
-                'user_id' => $userID,
-                'name' => $this->data['name'],
-                'thumbnail' => $this->data['thumbnail'] ? PlaylistCommands::thumbnailStore('thumbnail') : null,
-                'slug' => \Str::slug($this->data['name'] . '-' . strtolower(\Str::random(20))),
-                'description' =>  $this->data['description'],
-                'price' =>  $this->overwritePriceFormat($this->data['price'])
-            ]);
-            $playlist->tags()->attach($this->data['tags']);
+            DB::transaction(function () use ($userID) {
+                $playlist = PlaylistCommands::create([
+                    'user_id' => $userID,
+                    'name' => $this->data['name'],
+                    'thumbnail' => $this->data['thumbnail'] ? PlaylistCommands::thumbnailStore('thumbnail') : null,
+                    'slug' => \Str::slug($this->data['name'] . '-' . strtolower(\Str::random(20))),
+                    'description' =>  $this->data['description'],
+                    'price' =>  $this->overwritePriceFormat($this->data['price'])
+                ]);
+                $playlist->tags()->attach($this->data['tags']);
+            });
 
             return $this->respondRedirectMessage('screencast.playlists.index', 'success', 'Data berhasil disimpan');
         } catch (\Exception $e) {
@@ -153,11 +156,13 @@ class PlaylistController extends Controller
                 return redirect()->route('screencast.playlists.edit', $playlist)->withErrors($validator, 'playlist_update');
             }
 
-            $data['price'] = $this->overwritePriceFormat($this->data['price']);
-            PlaylistCommands::update($playlist, $data);
-            if ($this->data['tags']) {
-                $playlist->tags()->sync($this->data['tags']);
-            }
+            DB::transaction(function () use ($playlist, $data) {
+                $data['price'] = $this->overwritePriceFormat($this->data['price']);
+                PlaylistCommands::update($playlist, $data);
+                if ($this->data['tags']) {
+                    $playlist->tags()->sync($this->data['tags']);
+                }
+            });
 
             return redirect()->route('screencast.playlists.edit', $playlist)->with('success', 'Data berhasil diubah');
         } catch (\Exception $e) {
