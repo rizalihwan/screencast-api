@@ -13,7 +13,7 @@ Route::middleware(['auth'])->group(function () {
     // screencast
     Route::prefix('screencast')->namespace('screencast')->name('screencast.')->group(function () {
         // playlist
-        Route::resource('playlists', 'PlaylistController')->middleware(['permission:create playlists']);
+        Route::resource('playlists', 'PlaylistController')->middleware(['permission:create-playlists']);
         // tag
         Route::resource('tags', 'TagController');
         // video

@@ -75,7 +75,9 @@
                                     <th class="px-4 py-3">#</th>
                                     <th class="px-4 py-3">Name</th>
                                     <th class="px-4 py-3">Total Playlist</th>
-                                    <th class="px-4 py-3">Action</th>
+                                    @can('delete-tags')
+                                        <th class="px-4 py-3">Action</th>
+                                    @endcan
                                 </tr>
                             </thead>
                             <tbody class="bg-white">
@@ -89,19 +91,21 @@
                                                 class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-sm">
                                                 {{ $key->countPlaylists }} </span>
                                         </td>
-                                        <td class="px-4 py-5 text-ms font-semibold border">
-                                            <a href="{{ route('screencast.tags.edit', $key->slug) }}"
-                                                class="p-3 bg-transparent border-2 border-green-500 text-green-500 text-lg rounded-lg hover:bg-green-500 hover:text-gray-100 focus:border-4 focus:border-green-300"><i
-                                                    class="fa fa-pencil"></i></a>
-                                            <form action="{{ route('screencast.tags.destroy', $key->slug) }}"
-                                                method="post" class="mt-5">
-                                                @csrf
-                                                @method('delete')
-                                                <button type="submit" onclick="return confirm('Hapus data?');"
-                                                    class="p-3 bg-transparent border-2 border-red-500 text-red-500 text-lg rounded-lg hover:bg-red-500 hover:text-gray-100 focus:border-4 focus:border-red-300"><i
-                                                        class="fa fa-trash"></i></button>
-                                            </form>
-                                        </td>
+                                        @can('delete-tags')
+                                            <td class="px-4 py-5 text-ms font-semibold border">
+                                                <a href="{{ route('screencast.tags.edit', $key->slug) }}"
+                                                    class="p-3 bg-transparent border-2 border-green-500 text-green-500 text-lg rounded-lg hover:bg-green-500 hover:text-gray-100 focus:border-4 focus:border-green-300"><i
+                                                        class="fa fa-pencil"></i></a>
+                                                <form action="{{ route('screencast.tags.destroy', $key->slug) }}"
+                                                    method="post" class="mt-5">
+                                                    @csrf
+                                                    @method('delete')
+                                                    <button type="submit" onclick="return confirm('Hapus data?');"
+                                                        class="p-3 bg-transparent border-2 border-red-500 text-red-500 text-lg rounded-lg hover:bg-red-500 hover:text-gray-100 focus:border-4 focus:border-red-300"><i
+                                                            class="fa fa-trash"></i></button>
+                                                </form>
+                                            </td>
+                                        @endcan
                                     </tr>
                                 @empty
                                     <tr class="text-gray-700">

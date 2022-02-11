@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Validator;
 
 class TagController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('permission:delete-tags')->only(['edit', 'update', 'destroy']);
+        $this->middleware('permission:create-tags')->only(['index', 'store']);
+    }
     /**
      * Display a listing of the resource.
      *
