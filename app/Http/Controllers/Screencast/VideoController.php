@@ -14,7 +14,7 @@ class VideoController extends Controller
      */
     public function index()
     {
-        //
+        return view('screencast.videos.index');
     }
 
     /**
@@ -57,7 +57,7 @@ class VideoController extends Controller
      */
     public function edit($id)
     {
-        //
+        return view('screencast.videos.index');
     }
 
     /**
