@@ -17,7 +17,8 @@ Route::middleware(['auth'])->group(function () {
         // tag
         Route::resource('tags', 'TagController');
         // video
-        Route::resource('videos', 'VideoController');
+        Route::resource('videos', 'VideoController')->except(['create']);
+        Route::get('/videos/{playlist}/create', 'VideoController@create')->name('videos.create');
     });
 });
 

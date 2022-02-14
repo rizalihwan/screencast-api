@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Screencast;
 
 use App\Http\Controllers\Controller;
+use App\Models\Screencast\Playlist;
 use Illuminate\Http\Request;
 
 class VideoController extends Controller
@@ -22,9 +23,12 @@ class VideoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Playlist $playlist)
     {
-        //
+        $playlist = strtoupper($playlist->name);
+        return view('screencast.videos.index', [
+            'playlist' => "Playlist : {$playlist}"
+        ]);
     }
 
     /**
@@ -35,7 +39,7 @@ class VideoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        dd($request->all());
     }
 
     /**
