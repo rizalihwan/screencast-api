@@ -15,4 +15,9 @@ class Video extends Model
     {
         return 'slug';
     }
+
+    public function playlist()
+    {
+        return $this->belongsTo(Playlist::class);
+    }
 }
