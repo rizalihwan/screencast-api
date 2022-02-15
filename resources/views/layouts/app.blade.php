@@ -31,9 +31,38 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+    </script>
+    <script src="{{ asset('js/sweetalert2.all.min.js') }}"></script>
+
     @stack('script')
+
+    <script>
+        // success message
+        @if (session()->has('success'))
+            Swal.fire({
+            icon: 'success',
+            title: "{{ session()->get('success') }}",
+            showConfirmButton: false,
+            timer: 2400,
+            });
+        @endif
+
+        // error message
+        @if (session()->has('error'))
+            Swal.fire({
+            title: "{{ session()->get('error') }}",
+            icon: 'error',
+            showCancelButton: true,
+            showConfirmButton: false,
+            cancelButtonColor: '#d33',
+            });
+        @endif
+    </script>
+
 </body>
 
 </html>
