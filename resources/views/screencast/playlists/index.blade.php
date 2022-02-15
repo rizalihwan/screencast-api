@@ -12,30 +12,6 @@
 
     <div class="grid grid-rows-12 grid-flow-col gap-12">
         <div>
-            @if (session()->has('success'))
-                <div class="flex items-center bg-green-500 text-white text-sm font-bold px-4 py-3 mb-5"
-                    style="width: 500px;" role="alert">
-                    <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path
-                            d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z" />
-                    </svg>
-                    <p>
-                        {{ session()->get('success') }}
-                    </p>
-                </div>
-            @endif
-            @if (session()->has('error'))
-                <div class="flex items-center bg-red-500 text-white text-sm font-bold px-4 py-3 mb-5"
-                    style="width: 500px;" role="alert">
-                    <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path
-                            d="M12.432 0c1.34 0 2.01.912 2.01 1.957 0 1.305-1.164 2.512-2.679 2.512-1.269 0-2.009-.75-1.974-1.99C9.789 1.436 10.67 0 12.432 0zM8.309 20c-1.058 0-1.833-.652-1.093-3.524l1.214-5.092c.211-.814.246-1.141 0-1.141-.317 0-1.689.562-2.502 1.117l-.528-.88c2.572-2.186 5.531-3.467 6.801-3.467 1.057 0 1.233 1.273.705 3.23l-1.391 5.352c-.246.945-.141 1.271.106 1.271.317 0 1.357-.392 2.379-1.207l.6.814C12.098 19.02 9.365 20 8.309 20z" />
-                    </svg>
-                    <p>
-                        {{ session()->get('error') }}
-                    </p>
-                </div>
-            @endif
             <div class="w-full max-w-xs">
                 <form method="POST" action="{{ route('screencast.playlists.store') }}"
                     class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4" enctype="multipart/form-data">
@@ -191,19 +167,21 @@
                                                     <div
                                                         class="absolute px-2 py-2 bg-white rounded-md shadow dark-mode:bg-gray-800">
                                                         <a class="block px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
-                                                            href="{{ route('screencast.videos.create', $key->slug) }}"><i class="fa fa-play"></i> Video</a>
+                                                            href="{{ route('screencast.videos.create', $key->slug) }}"><i
+                                                                class="fa fa-play"></i> Video</a>
                                                         <a class="block px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"
-                                                            href="{{ route('screencast.playlists.edit', $key->slug) }}"><i class="fa fa-edit"></i> Edit</a>
+                                                            href="{{ route('screencast.playlists.edit', $key->slug) }}"><i
+                                                                class="fa fa-edit"></i> Edit</a>
                                                         <hr>
+                                                        <button type="submit"
+                                                            onclick="deleteItem('{{ $key->slug }}')"
+                                                            class="block px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"><i
+                                                                class="fa fa-trash"></i> Hapus</button>
                                                         <form
                                                             action="{{ route('screencast.playlists.destroy', $key->slug) }}"
-                                                            method="post" class="mt-5">
+                                                            method="post" id="DeleteItem{{ $key->slug }}">
                                                             @csrf
                                                             @method('delete')
-                                                            <button type="submit"
-                                                                onclick="return confirm('Hapus data?');"
-                                                                class="block px-4 py-2 mt-2 text-sm font-semibold bg-transparent rounded-lg dark-mode:bg-transparent dark-mode:hover:bg-gray-600 dark-mode:focus:bg-gray-600 dark-mode:focus:text-white dark-mode:hover:text-white dark-mode:text-gray-200 md:mt-0 hover:text-gray-900 focus:text-gray-900 hover:bg-gray-200 focus:bg-gray-200 focus:outline-none focus:shadow-outline"><i
-                                                                    class="fa fa-trash"></i> Hapus</button>
                                                         </form>
                                                     </div>
                                                 </div>
@@ -230,25 +208,53 @@
     @push('script')
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
         <script>
-            let rupiah = document.getElementById('price');
-            rupiah.addEventListener('keyup', function(e) {
-                rupiah.value = formatRupiah(this.value, 'Rp. ');
-            });
+            // vanilla js price formating code
+            let price = document.getElementById("price");
+            price.addEventListener("keyup", function() {
+                price.value = priceFormat(this.value, 'Rp. ');
+            })
 
-            function formatRupiah(angka, prefix) {
-                let number_string = angka.replace(/[^,\d]/g, '').toString(),
-                    split = number_string.split(','),
-                    sisa = split[0].length % 3,
-                    rupiah = split[0].substr(0, sisa),
-                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+            const priceFormat = (number, prefix) => {
+                let string_number = number.replace(/[^,\d]/g, '').toString(),
+                    split_number = string_number.split(','),
+                    remainder = split_number[0].length % 3,
+                    result = split_number[0].substr(0, remainder),
+                    thousand = split_number[0].substr(remainder).match(/\d{3}/gi);
 
-                if (ribuan) {
-                    separator = sisa ? '.' : '';
-                    rupiah += separator + ribuan.join('.');
+                if (thousand) {
+                    separator = remainder ? '.' : '';
+                    result += separator + thousand.join('.');
                 }
 
-                rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
-                return prefix == undefined ? rupiah : (rupiah ? 'Rp ' + rupiah : '');
+                result = split_number[1] != undefined ? result + ',' + split_number[1] : result;
+                return prefix == undefined ? result : (result ? 'Rp ' + result : '');
+            }
+
+            function deleteItem(id) {
+                Swal.fire({
+                    title: 'Apakah kamu yakin?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#009DA9',
+                    cancelButtonColor: '#d33',
+                    customClass: 'swal-wide',
+                    confirmButtonText: 'Yakin, hapus Playlist',
+                    cancelButtonText: 'Batalkan',
+                    allowOutsideClick: false
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        Swal.fire({
+                            title: "Sedang menghapus Playlist",
+                            showConfirmButton: false,
+                            timer: 2300,
+                            timerProgressBar: true,
+                            onOpen: () => {
+                                document.getElementById(`DeleteItem${id}`).submit();
+                                Swal.showLoading();
+                            }
+                        });
+                    }
+                })
             }
         </script>
     @endpush
