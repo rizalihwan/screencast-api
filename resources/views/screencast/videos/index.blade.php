@@ -4,7 +4,7 @@
         <div class="grid grid-cols-3 gap-4">
             <div>
                 <span class="font-bold">
-                    {{ $playlist }}
+                    {{ $playlist_name }}
                 </span>
             </div>
         </div>
@@ -13,7 +13,7 @@
     <div class="grid grid-rows-12 grid-flow-col gap-12">
         <div>
             <div class="w-full max-w-xs">
-                <form method="POST" action="{{ route('screencast.videos.store') }}"
+                <form method="POST" action="{{ route('screencast.videos.store', $playlist) }}"
                     class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                     @csrf
                     <div class="mb-4">
@@ -33,10 +33,10 @@
                             Deskripsi
                         </label>
                         <input
-                            class="shadow appearance-none border @if ($errors->playlist_store->has('description')) border-red-500 @endif rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
+                            class="shadow appearance-none border @if ($errors->video_store->has('description')) border-red-500 @endif rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
                             id="description" name="description" value="{{ old('description') }}" type="text">
-                        @if ($errors->playlist_store->has('description'))
-                            <p class="text-red-500 text-xs italic">{{ $errors->playlist_store->first('description') }}
+                        @if ($errors->video_store->has('description'))
+                            <p class="text-red-500 text-xs italic">{{ $errors->video_store->first('description') }}
                             </p>
                         @endif
                     </div>
