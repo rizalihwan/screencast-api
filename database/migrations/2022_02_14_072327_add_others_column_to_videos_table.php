@@ -14,7 +14,7 @@ class AddOthersColumnToVideosTable extends Migration
     public function up()
     {
         Schema::table('videos', function (Blueprint $table) {
-            $table->enum('is_intro', [0, 1])->default(0)->after('runtime');
+            $table->boolean('is_intro')->after('runtime');
         });
     }
 
