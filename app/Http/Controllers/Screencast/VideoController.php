@@ -64,9 +64,27 @@ class VideoController extends Controller
                 'is_intro' => request('is_intro')
             ]);
 
+            if ($data['is_intro'] || !empty($data['is_intro']) || $data['is_intro'] == 1 || $data['is_intro'] != null) {
+                $tag_names = $playlist->videos()->pluck('is_intro');
+                $recorded = [];
+
+                foreach ($tag_names as $origin) {
+                    array_push($recorded, (int)$origin);
+                }
+
+                if (in_array((int)$data['is_intro'], $recorded)) {
+                    return redirect()->route('screencast.videos.create', $playlist)
+                        ->with('warning', 'Intro sudah di pilih sebelumnya pada playlist ini, anda tidak bisa memilih intro lebih dari 1.')
+                        ->withInput();
+                } else {
+                    $data['is_intro'] = 1;
+                }
+            } else {
+                $data['is_intro'] = 0;
+            }
+
             DB::transaction(function () use ($playlist, $data) {
                 $data['slug'] = \Str::slug($data['title'] . '-' . strtolower(\Str::random(20)));
-                ($data['is_intro'] || !empty($data['is_intro']) || $data['is_intro'] == 1) ? true : false;
                 VideoCommands::create($playlist, $data);
             });
 
