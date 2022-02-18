@@ -190,7 +190,7 @@
                                                 </div>
                                             @else
                                                 <span class="text-center"> - </span>
-                                            @endcan
+                                            @endif
                                     </td>
                                 </tr>
                             @empty
