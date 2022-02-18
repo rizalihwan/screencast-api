@@ -44,22 +44,57 @@
         // success message
         @if (session()->has('success'))
             Swal.fire({
-            icon: 'success',
-            title: "{{ session()->get('success') }}",
-            showConfirmButton: false,
-            timer: 2400,
+                icon: 'success',
+                title: "{{ session()->get('success') }}",
+                showConfirmButton: false,
+                timer: 2400,
             });
         @endif
 
         // error message
         @if (session()->has('error'))
             Swal.fire({
-            title: "{{ session()->get('error') }}",
-            icon: 'error',
-            showCancelButton: true,
-            showConfirmButton: false,
-            cancelButtonColor: '#d33',
+                title: "Error!",
+                text: "{{ session()->get('error') }}",
+                icon: 'error',
+                showCancelButton: true,
+                cancelButtonText: 'Ok',
+                showConfirmButton: false,
+                cancelButtonColor: '#d33',
             });
+        @endif
+
+        // warning message
+        @if (session()->has('warning'))
+            Swal.fire({
+                title: "Perhatian!",
+                text: "{{ session()->get('warning') }}",
+                icon: 'warning',
+                showCancelButton: true,
+                cancelButtonText: 'Ok',
+                showConfirmButton: false,
+                cancelButtonColor: 'gray',
+            });
+        @endif
+
+        // toast welcome
+        @if (session()->has('loginSuccess'))
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+            Toast.fire({
+                icon: 'success',
+                title: "{{ session()->get('loginSuccess') }}"
+            })
         @endif
     </script>
 
