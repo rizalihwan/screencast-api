@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Services\Playlist\{PlaylistCommands, PlaylistQueries};
 use App\Http\Services\Tag\TagQueries;
 use App\Models\Screencast\Playlist;
+use App\Traits\SlugBaseEntity;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,8 @@ use Illuminate\Support\Facades\Validator;
 
 class PlaylistController extends Controller
 {
+    use SlugBaseEntity;
+
     public function __construct()
     {
         $this->data = [

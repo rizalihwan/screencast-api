@@ -6,11 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Services\Video\VideoCommands;
 use App\Http\Services\Video\VideoQueries;
 use App\Models\Screencast\Playlist;
+use App\Traits\SlugBaseEntity;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class VideoController extends Controller
 {
+    use SlugBaseEntity;
+
     /**
      * Display a listing of the resource.
      *

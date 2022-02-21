@@ -5,11 +5,14 @@ namespace App\Http\Controllers\Screencast;
 use App\Http\Controllers\Controller;
 use App\Http\Services\Tag\{TagCommands, TagQueries};
 use App\Models\Screencast\Tag;
+use App\Traits\SlugBaseEntity;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class TagController extends Controller
 {
+    use SlugBaseEntity;
+
     public function __construct()
     {
         $this->middleware('permission:edit-tags')->only(['edit', 'update', 'destroy']);
