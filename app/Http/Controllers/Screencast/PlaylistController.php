@@ -83,7 +83,7 @@ class PlaylistController extends Controller
                     'user_id' => $userID,
                     'name' => $this->data['name'],
                     'thumbnail' => $this->data['thumbnail'] ? PlaylistCommands::thumbnailStore('thumbnail') : null,
-                    'slug' => \Str::slug($this->data['name'] . '-' . strtolower(\Str::random(20))),
+                    'slug' => $this->generateSlug($this->data['name']),
                     'description' =>  $this->data['description'],
                     'price' =>  $this->overwritePriceFormat($this->data['price'])
                 ]);

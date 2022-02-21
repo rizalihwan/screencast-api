@@ -35,4 +35,13 @@ class Controller extends BaseController
         else
             return $price;
     }
+
+    public function generateSlug($data)
+    {
+        try {
+            return (string) "scrcas_" . \Str::slug($data . '-' . strtolower(\Str::random(20))) . "_{$this->getUser()->id}";
+        } catch (\Exception $ex) {
+            throw new \Exception("Slug generate not responding! {$ex->getMessage} - Status Code : {$ex->getCode}");
+        }
+    }
 }

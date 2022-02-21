@@ -73,7 +73,7 @@ class TagController extends Controller
             }
 
             DB::transaction(function () use ($data) {
-                $data['slug'] = \Str::slug($data['name'] . '-' . strtolower(\Str::random(20)));
+                $data['slug'] = $this->generateSlug($data['name']);
                 TagCommands::create($data);
             });
 

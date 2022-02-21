@@ -84,7 +84,7 @@ class VideoController extends Controller
             }
 
             DB::transaction(function () use ($playlist, $data) {
-                $data['slug'] = \Str::slug($data['title'] . '-' . strtolower(\Str::random(20)));
+                $data['slug'] = $this->generateSlug($data['title']);
                 VideoCommands::create($playlist, $data);
             });
 
