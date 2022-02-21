@@ -144,7 +144,7 @@
                                         <td class="px-4 py-3 text-sm border">{{ $key->created_at->diffForHumans() }}
                                         </td>
                                         <td class="px-4 py-5 text-ms font-semibold border">
-                                            @if ($key->user_id == \Auth::id())
+                                            @if ($key->user_id == \Auth::id() || auth()->user()->hasRole('admin'))
                                                 <div @click.away="open = false" class="relative"
                                                     x-data="{ open: false }">
                                                     <button @click="open = !open"
