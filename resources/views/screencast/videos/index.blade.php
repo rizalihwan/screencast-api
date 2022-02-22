@@ -83,7 +83,7 @@
                                     class="form-check-input appearance-none h-4 w-4 border border-gray-300 rounded-sm bg-white checked:bg-blue-600 checked:border-blue-600 focus:outline-none transition duration-200 mt-1 align-top bg-no-repeat bg-center bg-contain float-left mr-2 cursor-pointer"
                                     type="checkbox" name="is_intro" id="is_intro">
                                 <label class="form-check-label inline-block text-gray-800" for="is_intro">
-                                    Make it as an Intro
+                                    Make Intro
                                 </label>
                             </div>
                         </div>
@@ -96,7 +96,7 @@
                 </form>
             </div>
         </div>
-        {{-- <div>
+        <div>
             <section class="container mx-auto font-mono">
                 <div class="w-full overflow-hidden rounded-lg shadow-lg">
                     <div class="w-full overflow-x-auto">
@@ -104,44 +104,51 @@
                             <thead>
                                 <tr
                                     class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-                                    <th class="px-4 py-3">#</th>
-                                    <th class="px-4 py-3">Name</th>
-                                    <th class="px-4 py-3">Total Playlist</th>
-                                    @can('delete-tags')
-                                        <th class="px-4 py-3">Action</th>
-                                    @endcan
+                                    <th class="px-4 py-3">Episode</th>
+                                    <th class="px-4 py-3">Judul</th>
+                                    <th class="px-4 py-3">Waktu Berjalan</th>
+                                    <th class="px-4 py-3">Deskripsi</th>
+                                    <th class="px-4 py-3">Video URL</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white">
-                                @forelse ($tags as $key)
+                                @forelse ($videos as $key)
                                     <tr class="text-gray-700">
                                         <td class="px-4 py-3 text-sm border">
-                                            {{ $loop->iteration + $tags->firstItem() - 1 . '.' }}</td>
-                                        <td class="px-4 py-3 text-sm border">{{ \Str::ucfirst($key->name) }}</td>
+                                            @if ($key->is_intro == true)
+                                                <span
+                                                    class="px-2 py-1 font-semibold leading-tight text-red-700 bg-red-100 rounded-sm">
+                                                    {{ $key->episode }}
+                                                </span>
+                                            @else
+                                                {{ $key->episode }}
+                                            @endif
+                                        </td>
+                                        <td class="px-4 py-3 text-sm border">{{ $key->title }}</td>
                                         <td class="px-4 py-3 text-xs border">
                                             <span
                                                 class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-sm">
-                                                {{ $key->countPlaylists }} </span>
+                                                {{ $key->runtime }} </span>
                                         </td>
-                                        @can('delete-tags')
-                                            <td class="px-4 py-5 text-ms font-semibold border">
-                                                <a href="{{ route('screencast.tags.edit', $key->slug) }}"
-                                                    class="p-3 bg-transparent border-2 border-green-500 text-green-500 text-lg rounded-lg hover:bg-green-500 hover:text-gray-100 focus:border-4 focus:border-green-300"><i
-                                                        class="fa fa-pencil"></i></a>
-                                                <form action="{{ route('screencast.tags.destroy', $key->slug) }}"
-                                                    method="post" class="mt-5">
-                                                    @csrf
-                                                    @method('delete')
-                                                    <button type="submit" onclick="return confirm('Hapus data?');"
-                                                        class="p-3 bg-transparent border-2 border-red-500 text-red-500 text-lg rounded-lg hover:bg-red-500 hover:text-gray-100 focus:border-4 focus:border-red-300"><i
-                                                            class="fa fa-trash"></i></button>
-                                                </form>
-                                            </td>
-                                        @endcan
+                                        <td class="px-4 py-3 text-sm border">{{ $key->description }}</td>
+                                        <td class="px-4 py-3 text-sm border">{{ $key->video_path_url }}</td>
+                                        {{-- <td class="px-4 py-5 text-ms font-semibold border">
+                                            <a href="{{ route('screencast.tags.edit', $key->slug) }}"
+                                                class="p-3 bg-transparent border-2 border-green-500 text-green-500 text-lg rounded-lg hover:bg-green-500 hover:text-gray-100 focus:border-4 focus:border-green-300"><i
+                                                    class="fa fa-pencil"></i></a>
+                                            <form action="{{ route('screencast.tags.destroy', $key->slug) }}"
+                                                method="post" class="mt-5">
+                                                @csrf
+                                                @method('delete')
+                                                <button type="submit" onclick="return confirm('Hapus data?');"
+                                                    class="p-3 bg-transparent border-2 border-red-500 text-red-500 text-lg rounded-lg hover:bg-red-500 hover:text-gray-100 focus:border-4 focus:border-red-300"><i
+                                                        class="fa fa-trash"></i></button>
+                                            </form>
+                                        </td> --}}
                                     </tr>
                                 @empty
                                     <tr class="text-gray-700">
-                                        <td colspan="4"
+                                        <td colspan="5"
                                             class="px-4 py-3 text-ms font-semibold border text-center bg-red-500">Data
                                             Empty.</td>
                                     </tr>
@@ -149,12 +156,12 @@
                             </tbody>
                         </table>
                         <div class="my-2 p-4">
-                            {{ $tags->links() }}
+                            {{ $videos->links() }}
                         </div>
                     </div>
                 </div>
             </section>
-        </div> --}}
+        </div>
     </div>
     @push('script')
         <script>

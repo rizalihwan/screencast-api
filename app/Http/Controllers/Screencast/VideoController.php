@@ -14,6 +14,18 @@ class VideoController extends Controller
 {
     use SlugBaseEntity;
 
+    protected static function preventDuplication($model, $column)
+    {
+        $videos = $model->videos()->pluck($column);
+        $recorded = [];
+
+        foreach ($videos as $origin) {
+            array_push($recorded, (int)$origin);
+        }
+
+        return $recorded;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -31,9 +43,12 @@ class VideoController extends Controller
      */
     public function create(Playlist $playlist)
     {
+        $this->authorize('optionAccessRights', $playlist);
+
         return view('screencast.videos.index', [
             'playlist' => $playlist,
-            'playlist_name' => "Playlist : {$playlist->name}"
+            'playlist_name' => "Playlist : {$playlist->name}",
+            'videos' => VideoQueries::getListVideoByPlaylist($playlist->id, ['episode', 'ASC'], 5)
         ]);
     }
 
@@ -45,14 +60,25 @@ class VideoController extends Controller
      */
     public function store(Playlist $playlist)
     {
+        $this->authorize('optionAccessRights', $playlist);
+
         try {
             $data = request()->except(['_token']);
+
+            $rules = array_merge(VideoQueries::$rules, [
+                'slug' => 'unique:videos,slug',
+                'playlist_id' => 'exists:playlists,id'
+            ]);
+
+            if (in_array((int)$data['episode'], self::preventDuplication($playlist, 'episode'))) {
+                $rules = array_merge($rules, [
+                    'episode' => 'required|numeric|unique:videos,episode'
+                ]);
+            }
+
             $validator = Validator::make(
                 $data,
-                array_merge(VideoQueries::$rules, [
-                    'slug' => 'unique:videos,slug',
-                    'playlist_id' => 'exists:playlists,id'
-                ]),
+                $rules,
                 VideoQueries::$mesaages,
                 VideoQueries::$attributes
             );
@@ -68,14 +94,7 @@ class VideoController extends Controller
             ]);
 
             if ($data['is_intro'] || !empty($data['is_intro']) || $data['is_intro'] == 1 || $data['is_intro'] != null) {
-                $tag_names = $playlist->videos()->pluck('is_intro');
-                $recorded = [];
-
-                foreach ($tag_names as $origin) {
-                    array_push($recorded, (int)$origin);
-                }
-
-                if (in_array((int)$data['is_intro'], $recorded)) {
+                if (!in_array((int)$data['is_intro'], self::preventDuplication($playlist, 'is_intro'))) {
                     return redirect()->route('screencast.videos.create', $playlist)
                         ->with('warning', 'Intro sudah di pilih sebelumnya pada playlist ini, anda tidak bisa memilih intro lebih dari 1.')
                         ->withInput();
@@ -91,7 +110,7 @@ class VideoController extends Controller
                 VideoCommands::create($playlist, $data);
             });
 
-            return $this->respondRedirectMessage('screencast.playlists.index', 'success', 'Data berhasil disimpan');
+            return redirect()->route('screencast.videos.create', $playlist)->with('success', 'Data berhasil disimpan');
         } catch (\Exception $e) {
             return $this->respondRedirectMessage('screencast.playlists.index', 'error', "{$e->getMessage()}, {$e->getCode()}");
         }

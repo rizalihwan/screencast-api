@@ -12,7 +12,6 @@ class VideoQueries extends Service
         'title' => 'required|max:50|min:3',
         'description' => 'required|max:200|min:10',
         'video_path_url' => 'required|url',
-        'episode' => 'required|numeric',
         'runtime' => 'required',
         'is_intro' => 'nullable'
     ];
@@ -22,7 +21,8 @@ class VideoQueries extends Service
         'min' => ':attribute minimal :min karakter',
         'max' => ':attribute maximal :max karakter',
         'numeric' => ':attribute yang dimasukan harus angka',
-        'url' => ':attribute yang dimasukan harus berupa alamat url'
+        'url' => ':attribute yang dimasukan harus berupa alamat url',
+        'unique' => ':attribute sudah ada'
     ];
 
     static $attributes = [
@@ -37,6 +37,21 @@ class VideoQueries extends Service
     {
         try {
             return Video::with(['playlist'])->get();
+        } catch (Exception $th) {
+            if (in_array($th->getCode(), self::$error_codes)) {
+                throw new Exception($th->getMessage(), $th->getCode());
+            }
+            throw new Exception($th->getMessage(), 500);
+        }
+    }
+
+    public static function getListVideoByPlaylist(int $key, array $orderBy = ['id', 'ASC'], int $paginated = 5)
+    {
+        try {
+            return Video::where('playlist_id', $key)
+                ->with(['playlist'])
+                ->orderBy($orderBy[0], $orderBy[1])
+                ->paginate($paginated);
         } catch (Exception $th) {
             if (in_array($th->getCode(), self::$error_codes)) {
                 throw new Exception($th->getMessage(), $th->getCode());
