@@ -94,7 +94,7 @@ class VideoController extends Controller
             ]);
 
             if ($data['is_intro'] || !empty($data['is_intro']) || $data['is_intro'] == 1 || $data['is_intro'] != null) {
-                if (!in_array((int)$data['is_intro'], self::preventDuplication($playlist, 'is_intro'))) {
+                if (in_array((int)$data['is_intro'], self::preventDuplication($playlist, 'is_intro'))) {
                     return redirect()->route('screencast.videos.create', $playlist)
                         ->with('warning', 'Intro sudah di pilih sebelumnya pada playlist ini, anda tidak bisa memilih intro lebih dari 1.')
                         ->withInput();
