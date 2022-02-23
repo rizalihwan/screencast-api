@@ -59,4 +59,16 @@ class VideoQueries extends Service
             throw new Exception($th->getMessage(), 500);
         }
     }
+
+    public static function getOneVideo($video)
+    {
+        try {
+            return $video;
+        } catch (Exception $th) {
+            if (in_array($th->getCode(), self::$error_codes)) {
+                throw new Exception($th->getMessage(), $th->getCode());
+            }
+            throw new Exception($th->getMessage(), 500);
+        }
+    }
 }

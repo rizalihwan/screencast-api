@@ -109,6 +109,7 @@
                                     <th class="px-4 py-3">Waktu Berjalan</th>
                                     <th class="px-4 py-3">Deskripsi</th>
                                     <th class="px-4 py-3">Video URL</th>
+                                    <th class="px-4 py-3">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white">
@@ -131,12 +132,14 @@
                                                 {{ $key->runtime }} </span>
                                         </td>
                                         <td class="px-4 py-3 text-sm border">{{ $key->description }}</td>
-                                        <td class="px-4 py-3 text-sm border">{{ $key->video_path_url }}</td>
-                                        {{-- <td class="px-4 py-5 text-ms font-semibold border">
-                                            <a href="{{ route('screencast.tags.edit', $key->slug) }}"
+                                        <td class="px-4 py-3 text-sm border">
+                                            {{ \Str::limit($key->video_path_url, 10) }}</td>
+                                        <td class="px-4 py-5 text-ms font-semibold border">
+                                            <a href="{{ route('screencast.videos.edit', [$key->slug, $playlist]) }}"
                                                 class="p-3 bg-transparent border-2 border-green-500 text-green-500 text-lg rounded-lg hover:bg-green-500 hover:text-gray-100 focus:border-4 focus:border-green-300"><i
                                                     class="fa fa-pencil"></i></a>
-                                            <form action="{{ route('screencast.tags.destroy', $key->slug) }}"
+                                            <form
+                                                action="{{ route('screencast.videos.destroy', [$key->slug, $playlist]) }}"
                                                 method="post" class="mt-5">
                                                 @csrf
                                                 @method('delete')
@@ -144,11 +147,11 @@
                                                     class="p-3 bg-transparent border-2 border-red-500 text-red-500 text-lg rounded-lg hover:bg-red-500 hover:text-gray-100 focus:border-4 focus:border-red-300"><i
                                                         class="fa fa-trash"></i></button>
                                             </form>
-                                        </td> --}}
+                                        </td>
                                     </tr>
                                 @empty
                                     <tr class="text-gray-700">
-                                        <td colspan="5"
+                                        <td colspan="6"
                                             class="px-4 py-3 text-ms font-semibold border text-center bg-red-500">Data
                                             Empty.</td>
                                     </tr>

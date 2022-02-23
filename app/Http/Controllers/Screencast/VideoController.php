@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Screencast;
 
 use App\Http\Controllers\Controller;
-use App\Http\Services\Video\VideoCommands;
-use App\Http\Services\Video\VideoQueries;
-use App\Models\Screencast\Playlist;
+use App\Http\Services\Video\{VideoCommands, VideoQueries};
+use App\Models\Screencast\{Playlist, Video};
 use App\Traits\SlugBaseEntity;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -26,21 +25,6 @@ class VideoController extends Controller
         return $recorded;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        return view('screencast.videos.index');
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create(Playlist $playlist)
     {
         $this->authorize('optionAccessRights', $playlist);
@@ -48,16 +32,10 @@ class VideoController extends Controller
         return view('screencast.videos.index', [
             'playlist' => $playlist,
             'playlist_name' => "Playlist : {$playlist->name}",
-            'videos' => VideoQueries::getListVideoByPlaylist($playlist->id, ['episode', 'ASC'], 5)
+            'videos' => VideoQueries::getListVideoByPlaylist($playlist->id, ['episode', 'ASC'], 3)
         ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Playlist $playlist)
     {
         $this->authorize('optionAccessRights', $playlist);
@@ -116,48 +94,57 @@ class VideoController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function show(Video $video)
     {
-        //
+        if (empty($video)) {
+            abort(404, "NOT FOUND");
+        }
+
+        dd($video);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function edit(Video $video, Playlist $playlist)
     {
-        return view('screencast.videos.index');
+        $this->authorize('optionAccessRights', $playlist);
+
+        if (in_array((int)1, self::preventDuplication($playlist, 'is_intro'))) {
+            $htmlCheckedIntro = [
+                'attribute' => 'disabled',
+                'label' => 'Intro Available.'
+            ];
+        } else {
+            $htmlCheckedIntro = [
+                'attribute' => false,
+                'label' => 'Make Intro'
+            ];
+        }
+
+        return view('screencast.videos.edit', [
+            'playlist' => $playlist,
+            'htmlCheckedIntro' => $htmlCheckedIntro,
+            'video' => VideoQueries::getOneVideo($video)
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update($id)
+    public function update(Video $video, Playlist $playlist)
     {
-        //
+        // something like that
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function destroy(Video $video, Playlist $playlist)
     {
-        //
+        try {
+            if (empty($video)) {
+                abort(404, "NOT FOUND");
+            }
+
+            VideoCommands::delete($video);
+
+            return redirect()->route('screencast.videos.create', $playlist)
+                ->with('success', 'Data berhasil di Hapus');
+        } catch (\Exception $e) {
+            return redirect()->route('screencast.videos.create', $playlist)
+                ->with('error', $e->getMessage());
+        }
     }
 }
