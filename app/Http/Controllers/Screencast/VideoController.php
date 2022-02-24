@@ -128,7 +128,63 @@ class VideoController extends Controller
 
     public function update(Video $video, Playlist $playlist)
     {
-        // something like that
+        try {
+            $data = request()->except(['_token']);
+
+            $rules = VideoQueries::$rules;
+
+            if ($video->episode != $data['episode']) {
+                if (in_array((int)$data['episode'], self::preventDuplication($playlist, 'episode'))) {
+                    $rules = array_merge($rules, [
+                        'episode' => 'required|numeric|unique:videos,episode'
+                    ]);
+                } else {
+                    $rules = $rules;
+                }
+            }
+
+            $validator = Validator::make(
+                $data,
+                $rules,
+                VideoQueries::$mesaages,
+                VideoQueries::$attributes
+            );
+
+            if ($validator->fails()) {
+                return redirect()->route('screencast.videos.edit', [$video, $playlist])
+                    ->withErrors($validator, 'video_update')
+                    ->withInput();
+            }
+
+            $data = array_merge($data, [
+                'is_intro' => request('is_intro')
+            ]);
+
+            if ($data['is_intro'] == "on" || $data['is_intro'] == 1) {
+                $val = 1;
+                if ($val != (int)$video->is_intro) {
+                    if (in_array($val, self::preventDuplication($playlist, 'is_intro'))) {
+                        return redirect()->route('screencast.videos.edit', [$video, $playlist])
+                            ->with('warning', 'Intro sudah di pilih sebelumnya pada playlist ini, anda tidak bisa memilih intro lebih dari 1.')
+                            ->withInput();
+                    } else {
+                        $data['is_intro'] = 1;
+                    }
+                } else {
+                    $data['is_intro'] = 1;
+                }
+            } else {
+                $data['is_intro'] = 0;
+            }
+
+            DB::transaction(function () use ($video, $data) {
+                VideoCommands::update($video, $data);
+            });
+
+            return redirect()->route('screencast.videos.edit', [$video, $playlist])->with('success', 'Data berhasil diubah');
+        } catch (\Exception $e) {
+            return redirect()->route('screencast.videos.edit', [$video, $playlist])->with('error', "{$e->getMessage()}, {$e->getCode()}");
+        }
     }
 
     public function destroy(Video $video, Playlist $playlist)

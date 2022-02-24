@@ -20,8 +20,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/videos/{playlist}/create', 'VideoController@create')->name('videos.create');
         Route::post('/videos/{playlist}/store', 'VideoController@store')->name('videos.store');
         Route::delete('/videos/{video}/{playlist}/destroy', 'VideoController@destroy')->name('videos.destroy');
-        Route::get('/videos/{video}/{playlist}/edit', 'VideoController@edit')->name('videos.edit');
         Route::patch('/videos/{video}/{playlist}/update', 'VideoController@update')->name('videos.update');
+        Route::get('/videos/{video}/{playlist}/edit', 'VideoController@edit')->name('videos.edit');
     });
 });
 

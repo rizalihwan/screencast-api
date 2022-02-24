@@ -13,10 +13,10 @@
     <div class="grid grid-rows-12 grid-flow-col gap-12">
         <div>
             <div class="w-full max-w-xs">
-                <form method="POST" action="{{ route('screencast.videos.update', [$video, $playlist]) }}"
+                <form action="{{ route('screencast.videos.update', [$video, $playlist]) }}" method="POST"
                     class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                    @csrf
                     @method('patch')
+                    @csrf
                     <div class="mb-4">
                         <label class="block text-gray-700 text-sm font-bold mb-2" for="title">
                             Title
@@ -89,7 +89,9 @@
                                     type="checkbox" name="is_intro" id="is_intro"
                                     @if ($video->is_intro == 1) checked @else {!! $htmlCheckedIntro['attribute'] !!} @endif>
                                 <label class="form-check-label inline-block text-gray-800" for="is_intro">
-                                    @if ($video->is_intro == 1) Make Intro @else {!! $htmlCheckedIntro['label'] !!} @endif
+                                    @if ($video->is_intro == 1)
+                                    Make Intro @else {!! $htmlCheckedIntro['label'] !!}
+                                    @endif
                                 </label>
                             </div>
                         </div>
@@ -105,13 +107,16 @@
     </div>
     @push('script')
         <script>
-            $isIntro = $('#is_intro');
-            $isIntro.on("click", function() {
-                if ($isIntro.is(':checked')) {
-                    $isIntro.attr('value', 1);
-                } else {
-                    $isIntro.removeAttr('value')
-                }
+            $(document).ready(function() {
+                $isIntro = $('#is_intro');
+                $isIntro.on("click", function() {
+                    if ($isIntro.is(':checked')) {
+                        $isIntro.attr('value', 1);
+                    } else {
+                        $isIntro.removeAttr('value', 1);
+                        $isIntro.attr('value', 0);
+                    }
+                });
             });
         </script>
     @endpush
