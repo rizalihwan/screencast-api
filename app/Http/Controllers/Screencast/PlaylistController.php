@@ -11,6 +11,8 @@ use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Redis;
+use Illuminate\Support\Facades\Cache;
 
 class PlaylistController extends Controller
 {
@@ -34,8 +36,12 @@ class PlaylistController extends Controller
      */
     public function index()
     {
+        $data = Cache::remember("playlists", 10 * 60, function () {
+            return PlaylistQueries::getDataWithPaginated(['id', 'DESC'], 10);
+        });
+
         return view('screencast.playlists.index', [
-            'playlists' => PlaylistQueries::getDataWithPaginated(['id', 'DESC'], 10),
+            'playlists' => $data,
             'tags' => TagQueries::getAllTag()
         ]);
     }
@@ -128,8 +134,11 @@ class PlaylistController extends Controller
             abort(404, "NOT FOUND");
         }
 
+        $data = PlaylistQueries::getOnePlaylist($playlist);
+        Redis::set('playlist_' . $playlist, $data);
+
         return view('screencast.playlists.edit', [
-            'playlist' => PlaylistQueries::getOnePlaylist($playlist),
+            'playlist' => $data,
             'tags' => TagQueries::getAllTag()
         ]);
     }
