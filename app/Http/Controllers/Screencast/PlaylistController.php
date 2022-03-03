@@ -6,17 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Services\Playlist\{PlaylistCommands, PlaylistQueries};
 use App\Http\Services\Tag\TagQueries;
 use App\Models\Screencast\Playlist;
-use App\Traits\SlugBaseEntity;
+use App\Traits\{PredisCache, SlugBaseEntity};
 use Exception;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Redis;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\{Auth, DB, Validator};
 
 class PlaylistController extends Controller
 {
-    use SlugBaseEntity;
+    use SlugBaseEntity, PredisCache;
 
     public function __construct()
     {
@@ -36,12 +32,8 @@ class PlaylistController extends Controller
      */
     public function index()
     {
-        $data = Cache::remember("playlists", 10 * 60, function () {
-            return PlaylistQueries::getDataWithPaginated(['id', 'DESC'], 10);
-        });
-
         return view('screencast.playlists.index', [
-            'playlists' => $data,
+            'playlists' => $this->predisSetAll("playlists", PlaylistQueries::getDataWithPaginated(['id', 'DESC'], 10)),
             'tags' => TagQueries::getAllTag()
         ]);
     }
@@ -135,7 +127,7 @@ class PlaylistController extends Controller
         }
 
         $data = PlaylistQueries::getOnePlaylist($playlist);
-        Redis::set('playlist_' . $playlist, $data);
+        $this->predisSetOne("playlist_", $playlist, $data);
 
         return view('screencast.playlists.edit', [
             'playlist' => $data,
