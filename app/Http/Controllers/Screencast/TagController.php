@@ -5,13 +5,12 @@ namespace App\Http\Controllers\Screencast;
 use App\Http\Controllers\Controller;
 use App\Http\Services\Tag\{TagCommands, TagQueries};
 use App\Models\Screencast\Tag;
-use App\Traits\SlugBaseEntity;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use App\Traits\{PredisCache, SlugBaseEntity};
+use Illuminate\Support\Facades\{DB, Validator};
 
 class TagController extends Controller
 {
-    use SlugBaseEntity;
+    use SlugBaseEntity, PredisCache;
 
     public function __construct()
     {
@@ -26,7 +25,7 @@ class TagController extends Controller
     public function index()
     {
         return view('screencast.tags.index', [
-            'tags' => TagQueries::getTagWithPaginated(['id', 'DESC'], 5)
+            'tags' => $this->predisSetAll("tags", TagQueries::getTagWithPaginated(['id', 'DESC'], 5))
         ]);
     }
 
@@ -112,6 +111,8 @@ class TagController extends Controller
         if (empty($tag)) {
             abort(404, "NOT FOUND");
         }
+
+        $this->predisSetOne("tag_", $tag);
 
         return view('screencast.tags.edit', compact('tag'));
     }

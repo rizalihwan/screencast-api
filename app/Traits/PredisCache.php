@@ -22,10 +22,10 @@ trait PredisCache
         }
     }
 
-    public function predisSetOne(string $prefix, $key, $data)
+    public function predisSetOne(string $prefix, $key)
     {
         try {
-            return Redis::set("{$prefix}{$key}", $data);
+            return Redis::set($prefix . $key, $key);
         } catch (Exception $ex) {
             throw new Exception("Error: Data tidak dapat di peroleh {$ex->getMessage()}", 500);
         }

@@ -5,13 +5,12 @@ namespace App\Http\Controllers\Screencast;
 use App\Http\Controllers\Controller;
 use App\Http\Services\Video\{VideoCommands, VideoQueries};
 use App\Models\Screencast\{Playlist, Video};
-use App\Traits\SlugBaseEntity;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+use App\Traits\{PredisCache, SlugBaseEntity};
+use Illuminate\Support\Facades\{DB, Validator};
 
 class VideoController extends Controller
 {
-    use SlugBaseEntity;
+    use SlugBaseEntity, PredisCache;
 
     protected static function preventDuplication($model, $column)
     {
@@ -32,7 +31,7 @@ class VideoController extends Controller
         return view('screencast.videos.index', [
             'playlist' => $playlist,
             'playlist_name' => "Playlist : {$playlist->name}",
-            'videos' => VideoQueries::getListVideoByPlaylist($playlist->id, ['episode', 'ASC'], 3)
+            'videos' => $this->predisSetAll("videos", VideoQueries::getListVideoByPlaylist($playlist->id, ['episode', 'ASC'], 3))
         ]);
     }
 
@@ -106,6 +105,7 @@ class VideoController extends Controller
     public function edit(Video $video, Playlist $playlist)
     {
         $this->authorize('optionAccessRights', $playlist);
+        $this->predisSetOne("video_", $video);
 
         if (in_array((int)1, self::preventDuplication($playlist, 'is_intro'))) {
             $htmlCheckedIntro = [

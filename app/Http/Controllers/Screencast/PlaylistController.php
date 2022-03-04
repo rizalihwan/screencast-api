@@ -127,7 +127,7 @@ class PlaylistController extends Controller
         }
 
         $data = PlaylistQueries::getOnePlaylist($playlist);
-        $this->predisSetOne("playlist_", $playlist, $data);
+        $this->predisSetOne("playlist_", $playlist);
 
         return view('screencast.playlists.edit', [
             'playlist' => $data,
