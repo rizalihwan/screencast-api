@@ -89,6 +89,8 @@ class PlaylistController extends Controller
                     'price' =>  $this->overwritePriceFormat($this->data['price'])
                 ]);
                 $playlist->tags()->attach($this->data['tags']);
+
+                $this->predisStoreData("playlists", $playlist->toArray());
             });
 
             return $this->respondRedirectMessage('screencast.playlists.index', 'success', 'Data berhasil disimpan');

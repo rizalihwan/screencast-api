@@ -30,4 +30,19 @@ trait PredisCache
             throw new Exception("Error: Data tidak dapat di peroleh {$ex->getMessage()}", 500);
         }
     }
+
+    public function predisStoreData(string $prefix, array $data_set)
+    {
+        $redis = Redis::connection();
+
+        return $redis->set(
+            $prefix,
+            json_encode($data_set)
+        );
+    }
+
+    public function predisDeleteData($key)
+    {
+        return Redis::del($key);
+    }
 }
