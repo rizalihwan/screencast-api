@@ -35,4 +35,14 @@ class Controller extends BaseController
         else
             return $price;
     }
+
+    // api dependy injection fn
+    public function respondWithData(bool $success, string $message, int $statusCode, $data)
+    {
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+            'data' => !is_array($data) ? $data : (array) $data
+        ], $statusCode);
+    }
 }
