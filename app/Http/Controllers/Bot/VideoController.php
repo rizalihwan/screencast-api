@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Screencast;
+namespace App\Http\Controllers\Bot;
 
 use App\Http\Controllers\Controller;
 use App\Http\Services\Video\{VideoCommands, VideoQueries};

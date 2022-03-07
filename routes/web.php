@@ -10,8 +10,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('dashboard', 'HomeController')->name('dashboard');
     });
 
-    // screencast
-    Route::prefix('screencast')->namespace('screencast')->name('screencast.')->group(function () {
+    // screencast back office tool
+    Route::prefix('screencast')->namespace('Bot')->name('screencast.')->group(function () {
         // playlist
         Route::resource('playlists', 'PlaylistController')->middleware(['permission:create-playlists']);
         // tag
