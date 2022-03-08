@@ -2,7 +2,10 @@
 
 namespace App\Http\Services\Video;
 
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Screencast\VideoResource;
 use App\Http\Services\Service;
+use App\Models\Screencast\Playlist;
 use App\Models\Screencast\Video;
 use Exception;
 
@@ -64,6 +67,55 @@ class VideoQueries extends Service
     {
         try {
             return $video;
+        } catch (Exception $th) {
+            if (in_array($th->getCode(), self::$error_codes)) {
+                throw new Exception($th->getMessage(), $th->getCode());
+            }
+            throw new Exception($th->getMessage(), 500);
+        }
+    }
+
+    public static function getVideoByPlaylist($playlist_slug)
+    {
+        try {
+            $playlist = Playlist::with(['videos'])->where('slug', $playlist_slug)->first();
+
+            if (empty($playlist)) {
+                return self::ctr()->respondWithData(false, 'Data tidak di temukan.', 404, []);
+            }
+
+            return self::ctr()->respondWithData(
+                true,
+                'Berhasil mendapatkan data',
+                200,
+                VideoResource::collection($playlist->videos()->orderBy('episode')->get())
+            );
+        } catch (Exception $th) {
+            if (in_array($th->getCode(), self::$error_codes)) {
+                throw new Exception($th->getMessage(), $th->getCode());
+            }
+            throw new Exception($th->getMessage(), 500);
+        }
+    }
+
+    public static function getOneVideoByEps($playlist_slug, int $episode)
+    {
+        try {
+            if ($episode == 0 || $episode == false) {
+                return self::ctr()->respondWithData(false, 'Episode tidak boleh kosong.', 404, []);
+            }
+            $playlist = Playlist::with(['videos'])->where('slug', $playlist_slug)->first();
+
+            if (empty($playlist)) {
+                return self::ctr()->respondWithData(false, 'Data tidak di temukan.', 404, []);
+            }
+
+            return self::ctr()->respondWithData(
+                true,
+                'Berhasil mendapatkan data',
+                200,
+                new VideoResource($playlist->videos()->where('episode', $episode)->first())
+            );
         } catch (Exception $th) {
             if (in_array($th->getCode(), self::$error_codes)) {
                 throw new Exception($th->getMessage(), $th->getCode());
