@@ -32,7 +32,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect(RouteServiceProvider::HOME)->with('loginSuccess', 'Signed in successfully');
+        return !request()->expectsJson() ? redirect(RouteServiceProvider::HOME)
+            ->with('loginSuccess', 'Signed in successfully') : response()->json(['You are Logged In.'], 200);
     }
 
     /**
@@ -49,6 +50,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return !request()->expectsJson() ? redirect('/login') : response()->json(['You are Logged Out.'], 200);
     }
 }
