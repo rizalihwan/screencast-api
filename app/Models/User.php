@@ -48,4 +48,19 @@ class User extends Authenticatable
     {
         return $this->hasMany(Playlist::class);
     }
+
+    public function playlist_purchases()
+    {
+        return $this->belongsToMany(
+            Playlist::class,
+            'purchased_playlist',
+            'user_id',
+            'playlist_id'
+        )->withTimestamps();
+    }
+
+    public function buy_playlist(Playlist $playlist)
+    {
+        return $this->playlist_purchases()->save($playlist);
+    }
 }

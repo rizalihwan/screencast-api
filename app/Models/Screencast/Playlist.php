@@ -32,6 +32,11 @@ class Playlist extends Model
         return $this->hasMany(Video::class);
     }
 
+    public function user_purchases()
+    {
+        return $this->belongsToMany(User::class, 'purchased_playlist', 'playlist_id', 'user_id');
+    }
+
     public function scopeShowThumbnail()
     {
         $thumb = $this->thumbnail;
