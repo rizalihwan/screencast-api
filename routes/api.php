@@ -13,3 +13,9 @@ Route::prefix('v1')->namespace('Api\V1')->group(function () {
         Route::get('{playlist_slug}/{video_episode}/detail', 'VideoController@detailVideo');
     });
 });
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::namespace('Auth')->group(function () {
+        Route::get('/user', 'UserController');
+    });
+});
