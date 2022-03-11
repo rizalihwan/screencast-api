@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Order\Cart;
 use App\Models\Screencast\Playlist;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -67,5 +68,15 @@ class User extends Authenticatable
     public function hasBought(Playlist $playlist)
     {
         return (bool) $this->playlist_purchases()->find($playlist->id);
+    }
+
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
+
+    public function alreadyInCart(Playlist $playlist)
+    {
+        return (bool) $this->carts()->where('playlist_id', $playlist->id)->first();
     }
 }

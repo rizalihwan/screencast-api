@@ -12,6 +12,16 @@ Route::prefix('v1')->namespace('Api\V1')->group(function () {
         Route::get('{playlist_slug}/all', 'VideoController@getVideoByPlaylist');
         Route::get('{playlist_slug}/{video_episode}/detail', 'VideoController@detailVideo')->middleware('auth:sanctum');
     });
+
+    Route::prefix('order')->namespace('Order')->middleware('auth:sanctum')->group(function () {
+        Route::post('add-to-cart/{playlist}', 'CartController@addToCart')->missing(function () {
+            return response()->json([
+                'success' => false,
+                'message' => 'The params entered is invalid.',
+                'data' => null
+            ], 404);
+        });
+    });
 });
 
 Route::middleware('auth:sanctum')->group(function () {
