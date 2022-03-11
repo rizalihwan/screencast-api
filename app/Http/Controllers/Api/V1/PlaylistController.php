@@ -19,7 +19,7 @@ class PlaylistController extends Controller
                 PlaylistResource::collection(PlaylistQueries::immutableInitialData()->latest()->paginate(5))
             );
         } catch (Exception $ex) {
-            throw new Exception($ex->getMessage(), 500);
+            throw new Exception($ex->getMessage(), $ex->getCode());
         }
     }
 
@@ -39,7 +39,7 @@ class PlaylistController extends Controller
                 new PlaylistResource($playlist)
             );
         } catch (Exception $ex) {
-            throw new Exception($ex->getMessage(), 500);
+            throw new Exception($ex->getMessage(), $ex->getCode());
         }
     }
 }
