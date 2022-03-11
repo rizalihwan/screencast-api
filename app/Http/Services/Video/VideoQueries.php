@@ -110,12 +110,22 @@ class VideoQueries extends Service
                 return self::ctr()->respondWithData(false, 'Data tidak di temukan.', 404, []);
             }
 
-            return self::ctr()->respondWithData(
-                true,
-                'Berhasil mendapatkan data',
-                200,
-                new VideoResource($playlist->videos()->where('episode', $episode)->first())
-            );
+            $video = $playlist->videos()->where('episode', $episode)->first();
+
+            if (!$video) {
+                return self::ctr()->respondWithData(false, 'Episode pada playlist ini tidak ditemukan.', 404, []);
+            } else {
+                if (auth()->user()->hasBought($playlist) || $video->is_intro == 1) {
+                    return self::ctr()->respondWithData(
+                        true,
+                        'Berhasil mendapatkan data',
+                        200,
+                        new VideoResource($video)
+                    );
+                }
+
+                return self::ctr()->respondWithData(false, 'You have to buy before you watch.', 200, []);
+            }
         } catch (Exception $th) {
             if (in_array($th->getCode(), self::$error_codes)) {
                 throw new Exception($th->getMessage(), $th->getCode());

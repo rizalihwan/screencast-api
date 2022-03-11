@@ -63,4 +63,9 @@ class User extends Authenticatable
     {
         return $this->playlist_purchases()->save($playlist);
     }
+
+    public function hasBought(Playlist $playlist)
+    {
+        return (bool) $this->playlist_purchases()->find($playlist->id);
+    }
 }
