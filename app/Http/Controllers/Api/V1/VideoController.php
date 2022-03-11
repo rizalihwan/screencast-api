@@ -13,7 +13,7 @@ class VideoController extends Controller
         try {
             return VideoQueries::getVideoByPlaylist($playlist_slug);
         } catch (Exception $ex) {
-            throw new Exception($ex->getMessage(), 500);
+            throw new Exception($ex->getMessage(), $ex->getCode());
         }
     }
 
@@ -22,7 +22,7 @@ class VideoController extends Controller
         try {
             return VideoQueries::getOneVideoByEps($playlist_slug, $video_episode);
         } catch (Exception $ex) {
-            throw new Exception($ex->getMessage(), 500);
+            throw new Exception($ex->getMessage(), $ex->getCode());
         }
     }
 }
