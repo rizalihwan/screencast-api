@@ -4,13 +4,27 @@ namespace App\Http\Controllers\Api\V1\Order;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Order\Cart\CartResource;
-use App\Http\Services\Order\Cart\CartCommands;
+use App\Http\Services\Order\Cart\{CartCommands, CartQueries};
 use App\Models\Screencast\Playlist;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class CartController extends Controller
 {
+    public function index()
+    {
+        try {
+            return $this->respondWithData(
+                true,
+                'Data berhasil di dapatkan',
+                200,
+                CartResource::collection(CartQueries::getListCart())
+            );
+        } catch (Exception $ex) {
+            throw new Exception($ex->getMessage(), $ex->getCode());
+        }
+    }
+
     public function addToCart(Playlist $playlist)
     {
         DB::beginTransaction();

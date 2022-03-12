@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Route;;
 
 Route::prefix('v1')->namespace('Api\V1')->group(function () {
     Route::prefix('playlist')->group(function () {
@@ -14,12 +14,15 @@ Route::prefix('v1')->namespace('Api\V1')->group(function () {
     });
 
     Route::prefix('order')->namespace('Order')->middleware('auth:sanctum')->group(function () {
-        Route::post('add-to-cart/{playlist}', 'CartController@addToCart')->missing(function () {
-            return response()->json([
-                'success' => false,
-                'message' => 'The params entered is invalid.',
-                'data' => null
-            ], 404);
+        Route::prefix('cart')->group(function () {
+            Route::get('/', 'CartController@index');
+            Route::post('add/{playlist}', 'CartController@addToCart')->missing(function () {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'The params entered is invalid.',
+                    'data' => null
+                ], 404);
+            });
         });
     });
 });
