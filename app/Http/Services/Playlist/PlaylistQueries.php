@@ -61,7 +61,7 @@ class PlaylistQueries extends Service
     public static function immutableInitialData()
     {
         try {
-            return Playlist::with(['user'])->withCount(['videos as countVideos']);
+            return Playlist::with(['user'])->withCount(['videos']);
         } catch (Exception $th) {
             if (in_array($th->getCode(), self::$error_codes)) {
                 throw new Exception($th->getMessage(), $th->getCode());

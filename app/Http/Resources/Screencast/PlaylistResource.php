@@ -25,7 +25,7 @@ class PlaylistResource extends JsonResource
             ],
             'thumbnail' => $this->thumbnail,
             'author' => $this->user,
-            'videos' => $this->countVideos
+            'videos' => $this->videos()->count()
         ];
     }
 }
