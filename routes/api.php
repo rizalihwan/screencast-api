@@ -16,13 +16,7 @@ Route::prefix('v1')->namespace('Api\V1')->group(function () {
     Route::prefix('order')->namespace('Order')->middleware('auth:sanctum')->group(function () {
         Route::prefix('cart')->group(function () {
             Route::get('/', 'CartController@index');
-            Route::post('add/{playlist}', 'CartController@addToCart')->missing(function () {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'The params entered is invalid.',
-                    'data' => null
-                ], 404);
-            });
+            Route::post('add/{playlist}', 'CartController@addToCart');
         });
     });
 });
