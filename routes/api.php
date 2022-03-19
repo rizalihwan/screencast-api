@@ -3,6 +3,10 @@
 use Illuminate\Support\Facades\Route;;
 
 Route::prefix('v1')->namespace('Api\V1')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::post('register', 'AuthController@register');
+    });
+
     Route::prefix('playlist')->group(function () {
         Route::get('/', 'PlaylistController@getAllPlaylist');
         Route::get('{playlist_slug}/detail', 'PlaylistController@detailPlaylist');
@@ -14,6 +18,8 @@ Route::prefix('v1')->namespace('Api\V1')->group(function () {
     });
 
     Route::prefix('order')->namespace('Order')->middleware('auth:sanctum')->group(function () {
+        Route::post('add', 'OrderController@store');
+
         Route::prefix('cart')->group(function () {
             Route::get('/', 'CartController@index');
             Route::post('add/{playlist}', 'CartController@addToCart');
