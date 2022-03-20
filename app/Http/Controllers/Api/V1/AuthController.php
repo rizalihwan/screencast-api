@@ -7,6 +7,7 @@ use App\Http\Resources\Auth\UserResource;
 use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -64,7 +65,7 @@ class AuthController extends Controller
 
             $data['password'] = Hash::make($request->password);
             $user = User::create($data);
-            $token = $user->createToken("userToken");
+            $token = $user->createToken("API Token");
 
             return $this->respondWithData(true, "Success saved data.", 200, [
                 'user' => new UserResource($user),
@@ -75,6 +76,63 @@ class AuthController extends Controller
             ]);
         } catch (Exception $e) {
             return $this->respondErrorException($e, request());
+        }
+    }
+
+    public function login(Request $request)
+    {
+        try {
+            $data = $request->all();
+
+            $validator = Validator::make(
+                $data,
+                [
+                    'email' => 'required|email',
+                    'password' => 'required'
+                ],
+                [
+                    'required' => ':attribute tidak boleh kosong',
+                ],
+                [
+                    'email' => 'E-Mail',
+                    'password' => 'Password'
+                ]
+            );
+
+            if ($validator->fails()) {
+                $errors = collect();
+                foreach ($validator->errors()->getMessages() as $key => $value) {
+                    foreach ($value as $error) {
+                        $errors->push($error);
+                    }
+                }
+                return $this->respondValidationError($errors, 'Validation Error!');
+            }
+
+            if (!Auth::attempt($data)) {
+                return response()->json(['success' => false, 'message' => 'Credentials not match.'], 401);
+            }
+
+            return $this->respondWithData(true, 'Login Success', 200, [
+                'token' => auth()->user()->createToken('API Token')->plainTextToken
+            ]);
+        } catch (Exception $e) {
+            return $this->respondErrorException($e, request());
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        try {
+            $user = $request->user();
+            $user->tokens()->where('id', $user->currentAccessToken()->id)->delete();
+
+            return [
+                'success' => true,
+                'message' => 'Logout success, Tokens has been revoked.'
+            ];
+        } catch (Exception $ex) {
+            throw new Exception($ex->getMessage(), $ex->getCode());
         }
     }
 }
