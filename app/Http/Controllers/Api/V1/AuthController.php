@@ -114,7 +114,7 @@ class AuthController extends Controller
             }
 
             return $this->respondWithData(true, 'Login Success', 200, [
-                'token' => auth()->user()->createToken('API Token')->plainTextToken
+                'token' => auth()->user()->createToken("API Token")->plainTextToken
             ]);
         } catch (Exception $e) {
             return $this->respondErrorException($e, request());
