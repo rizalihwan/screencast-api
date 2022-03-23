@@ -29,6 +29,10 @@ Route::prefix('v1')->namespace('Api\V1')->group(function () {
     });
 });
 
+Route::namespace('Api\V1\Order')->group(function () {
+    Route::post('notification-handler', 'OrderController@notificationHandler');
+});
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::namespace('Auth')->group(function () {
         Route::get('/user', 'UserController');

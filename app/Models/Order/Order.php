@@ -12,6 +12,10 @@ class Order extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'playlist_ids' => 'array'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
