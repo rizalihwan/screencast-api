@@ -12,6 +12,7 @@ Route::prefix('v1')->namespace('Api\V1')->group(function () {
     Route::prefix('playlist')->group(function () {
         Route::get('/', 'PlaylistController@getAllPlaylist');
         Route::get('{playlist_slug}/detail', 'PlaylistController@detailPlaylist');
+        Route::get('/user', 'PlaylistController@userHavePlaylist')->middleware('auth:sanctum');
     });
 
     Route::prefix('video')->group(function () {

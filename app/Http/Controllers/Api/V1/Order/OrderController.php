@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -61,23 +60,27 @@ class OrderController extends Controller
 
     public function notificationHandler(Request $request)
     {
-        $signature = hash($this->algorithm, $request->order_id . $request->status_code . $request->gross_amount . config('credentials.payment.server_key'));
+        try {
+            $signature = hash($this->algorithm, $request->order_id . $request->status_code . $request->gross_amount . config('credentials.payment.server_key'));
 
-        if($signature !== $request->signature_key) {
-            return false;
+            if ($signature !== $request->signature_key) {
+                return false;
+            }
+
+            $order = Order::where('trx_no', $request->order_id)->first();
+            $user = User::find($order->user_id);
+
+            foreach ($order->playlist_ids as $playlistKey) {
+                $playlist = Playlist::find($playlistKey);
+                $user->buy_playlist($playlist);
+            }
+
+            $order->delete();
+            $user->carts()->delete();
+
+            return;
+        } catch (\Exception $e) {
+            $this->respondErrorException($e, $request);
         }
-
-        $order = Order::where('trx_no', $request->order_id)->first();
-        $user = User::find($order->user_id);
-
-        foreach($order->playlist_ids as $playlistKey) {
-            $playlist = Playlist::find($playlistKey);
-            $user->buy_playlist($playlist);
-        }
-
-        $order->delete();
-        $user->carts()->delete();
-
-        return;
     }
 }

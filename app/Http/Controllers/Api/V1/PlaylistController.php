@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Screencast\PlaylistResource;
 use App\Http\Services\Playlist\PlaylistQueries;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class PlaylistController extends Controller
 {
@@ -37,6 +38,20 @@ class PlaylistController extends Controller
                 'Data berhasil di dapatkan',
                 200,
                 new PlaylistResource($playlist)
+            );
+        } catch (Exception $ex) {
+            throw new Exception($ex->getMessage(), $ex->getCode());
+        }
+    }
+
+    public function userHavePlaylist()
+    {
+        try {
+            return $this->respondWithData(
+                true,
+                'Data berhasil di dapatkan',
+                200,
+                Auth::user()->playlist_purchases()->latest()->paginate(5)
             );
         } catch (Exception $ex) {
             throw new Exception($ex->getMessage(), $ex->getCode());
